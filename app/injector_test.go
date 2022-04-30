@@ -13,9 +13,8 @@ type mockComponent struct {
 }
 
 func TestInjector(t *testing.T) {
-	injector := app.NewInjector()
-
 	t.Run("should return error if there is no registered dependency", func(t *testing.T) {
+		injector := app.NewInjector()
 		err := injector.Inject(&mockComponent{})
 		require.EqualError(t, err, "injector: data is not registered")
 	})

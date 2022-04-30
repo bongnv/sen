@@ -11,8 +11,9 @@ type Factory[T any] interface {
 }
 
 type Plugin[T any] struct {
-	app.ComponentPlugin
+	App     *app.Application `inject:"app"`
 	Factory Factory[T]
+	Name    string
 }
 
 func (f Plugin[_]) Apply(ctx context.Context) error {
@@ -21,8 +22,7 @@ func (f Plugin[_]) Apply(ctx context.Context) error {
 		return err
 	}
 
-	f.Component = t
-	return f.ComponentPlugin.Apply(ctx)
+	return f.App.ApplyPlugin(ctx, app.Component(f.Name, t))
 }
 
 func Component[T any](name string, f Factory[T]) app.Plugin {
@@ -40,23 +40,25 @@ type IService interface {
 }
 
 type ServiceFactoryPlugin[T IService] struct {
-	Plugin[T]
+	App     *app.Application `inject:"app"`
+	Factory Factory[T]
+	Name    string
 }
 
 func (f ServiceFactoryPlugin[T]) Apply(ctx context.Context) error {
-	if err := f.Plugin.Apply(ctx); err != nil {
+	s, err := f.Factory.New(ctx)
+	if err != nil {
 		return err
 	}
 
-	s := f.Component.(T)
 	f.App.OnRun(s.Run)
 	f.App.OnShutdown(s.Shutdown)
-	return nil
+	return f.App.ApplyPlugin(ctx, app.Component(f.Name, s))
 }
 
 func Service[T IService](name string, f Factory[T]) app.Plugin {
-	p := &ServiceFactoryPlugin[T]{}
-	p.Name = name
-	p.Factory = f
-	return p
+	return &ServiceFactoryPlugin[T]{
+		Name:    name,
+		Factory: f,
+	}
 }

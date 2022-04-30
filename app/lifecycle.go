@@ -7,6 +7,11 @@ import (
 	"sync/atomic"
 )
 
+// using function or interface?
+// using interface + component allows other to interact with the hook
+// we don't need as it can be a service
+type Hook func(context.Context) error
+
 type Lifecycle interface {
 	OnRun(Hook)
 	OnShutdown(Hook)

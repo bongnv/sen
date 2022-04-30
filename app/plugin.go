@@ -33,18 +33,20 @@ func Component(name string, c interface{}) Plugin {
 	}
 }
 
+// ModulePlugin composes multiple plugins to act as a plugin.
 type ModulePlugin struct {
 	App     *Application `inject:"app"`
 	Plugins []Plugin
 }
 
-// Module groups multiple plugins to act as a plugin.
+// Module creates a ModulePlugin by providing a group of plugins.
 func Module(plugins ...Plugin) Plugin {
 	return &ModulePlugin{
 		Plugins: plugins,
 	}
 }
 
+// Apply installs plugins into the application.
 func (m *ModulePlugin) Apply(ctx context.Context) error {
 	for _, p := range m.Plugins {
 		if err := m.App.ApplyPlugin(ctx, p); err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -53,10 +54,12 @@ func TestLifecycle(t *testing.T) {
 
 	t.Run("should propergate the error if a hook returns an error", func(t *testing.T) {
 		hook1Called := 0
+		doneCh := make(chan struct{})
 
 		lc := &app.DefaultLifecycle{}
 		lc.OnShutdown(func(_ context.Context) error {
 			hook1Called++
+			close(doneCh)
 			return nil
 		})
 
@@ -69,7 +72,12 @@ func TestLifecycle(t *testing.T) {
 		})
 
 		require.EqualError(t, lc.Shutdown(context.Background()), "random error")
-		require.Equal(t, 1, hook1Called)
+		select {
+		case <-doneCh:
+			require.Equal(t, 1, hook1Called)
+		case <-time.After(100 * time.Millisecond):
+			require.Fail(t, "test time out")
+		}
 	})
 
 	t.Run("should return an error if Shutdown is called twice", func(t *testing.T) {

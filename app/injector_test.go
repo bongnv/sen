@@ -3,8 +3,9 @@ package app_test
 import (
 	"testing"
 
-	"github.com/bongnv/sen/app"
 	"github.com/stretchr/testify/require"
+
+	"github.com/bongnv/sen/app"
 )
 
 type mockComponent struct {

@@ -110,12 +110,12 @@ func (injector *defaultInjector) inject(dep *dependency) error {
 	return nil
 }
 
-func (i *defaultInjector) loadDepForTag(tag string, t reflect.Type) (*dependency, error) {
+func (injector *defaultInjector) loadDepForTag(tag string, t reflect.Type) (*dependency, error) {
 	if tag == autoInjectionTag {
-		return i.findByType(t)
+		return injector.findByType(t)
 	}
 
-	loadedDep, found := i.dependencies[tag]
+	loadedDep, found := injector.dependencies[tag]
 	if !found {
 		return nil, fmt.Errorf("injector: %s is not registered", tag)
 	}
@@ -123,9 +123,9 @@ func (i *defaultInjector) loadDepForTag(tag string, t reflect.Type) (*dependency
 	return loadedDep, nil
 }
 
-func (i *defaultInjector) findByType(t reflect.Type) (*dependency, error) {
+func (injector *defaultInjector) findByType(t reflect.Type) (*dependency, error) {
 	var foundVal *dependency
-	for _, v := range i.dependencies {
+	for _, v := range injector.dependencies {
 		if v.reflectType.AssignableTo(t) {
 			if foundVal != nil {
 				return nil, fmt.Errorf("injector: there is a conflict when finding the dependency for %s", t.String())

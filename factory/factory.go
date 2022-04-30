@@ -10,12 +10,12 @@ type Factory[T any] interface {
 	New(ctx context.Context) (T, error)
 }
 
-type FactoryPlugin[T any] struct {
+type Plugin[T any] struct {
 	app.ComponentPlugin
 	Factory Factory[T]
 }
 
-func (f FactoryPlugin[_]) Apply(ctx context.Context) error {
+func (f Plugin[_]) Apply(ctx context.Context) error {
 	t, err := f.Factory.New(ctx)
 	if err != nil {
 		return err
@@ -26,7 +26,7 @@ func (f FactoryPlugin[_]) Apply(ctx context.Context) error {
 }
 
 func Component[T any](name string, f Factory[T]) app.Plugin {
-	p := &FactoryPlugin[T]{}
+	p := &Plugin[T]{}
 	p.Name = name
 	p.Factory = f
 	return p
@@ -40,11 +40,11 @@ type IService interface {
 }
 
 type ServiceFactoryPlugin[T IService] struct {
-	FactoryPlugin[T]
+	Plugin[T]
 }
 
 func (f ServiceFactoryPlugin[T]) Apply(ctx context.Context) error {
-	if err := f.FactoryPlugin.Apply(ctx); err != nil {
+	if err := f.Plugin.Apply(ctx); err != nil {
 		return err
 	}
 

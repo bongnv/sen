@@ -21,9 +21,14 @@ func New() *GracefulShutdown {
 
 func (s *GracefulShutdown) Apply(ctx context.Context) error {
 	s.shutdownCh = make(chan struct{})
-	s.App.Register("graceful-shutdown", s)
+
+	if err := s.App.Register("graceful-shutdown", s); err != nil {
+		return err
+	}
+
 	s.App.OnShutdown(s.Shutdown)
 	s.App.OnRun(s.Run)
+
 	return nil
 }
 

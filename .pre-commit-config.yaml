@@ -1,0 +1,19 @@
+# https://pre-commit.com/
+# Install pre-commit itself (once):
+#   $ brew install pre-commit
+# Add to your git hooks (once per repo):
+#   $ pre-commit install
+# Manually run all hooks (any time):
+#   $ pre-commit run -a
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.45.2
+    hooks:
+      - id: golangci-lint

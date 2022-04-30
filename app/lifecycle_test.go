@@ -57,6 +57,10 @@ func TestLifecycle(t *testing.T) {
 		lc := &app.DefaultLifecycle{}
 		lc.OnShutdown(func(_ context.Context) error {
 			hook1Called++
+			return nil
+		})
+
+		lc.OnShutdown(func(_ context.Context) error {
 			return errors.New("random error")
 		})
 

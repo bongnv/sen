@@ -11,12 +11,12 @@ import (
 	"github.com/bongnv/sen/app"
 )
 
-func TestLifecycle(t *testing.T) {
+func TestApplication(t *testing.T) {
 	t.Run("should run all hooks for OnRun stage", func(t *testing.T) {
 		hook1Called := 0
 		hook2Called := 0
 
-		lc := &app.DefaultLifecycle{}
+		lc := app.New()
 		lc.OnRun(func(_ context.Context) error {
 			hook1Called++
 			return nil
@@ -35,8 +35,9 @@ func TestLifecycle(t *testing.T) {
 	t.Run("should run all hooks for OnShutdown stage", func(t *testing.T) {
 		hook1Called := 0
 		hook2Called := 0
+		doneCh := make(chan struct{})
 
-		lc := &app.DefaultLifecycle{}
+		lc := app.New()
 		lc.OnShutdown(func(_ context.Context) error {
 			hook1Called++
 			return nil
@@ -47,50 +48,71 @@ func TestLifecycle(t *testing.T) {
 			return nil
 		})
 
+		go func() {
+			require.NoError(t, lc.Run(context.Background()))
+			close(doneCh)
+		}()
+
 		require.NoError(t, lc.Shutdown(context.Background()))
-		require.Equal(t, 1, hook1Called)
-		require.Equal(t, 1, hook2Called)
+		select {
+		case <-doneCh:
+			require.Equal(t, 1, hook1Called)
+			require.Equal(t, 1, hook2Called)
+		case <-time.After(100 * time.Millisecond):
+			require.Fail(t, "test timed out")
+		}
 	})
 
 	t.Run("should propergate the error if a hook returns an error", func(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})
 
-		lc := &app.DefaultLifecycle{}
-		lc.OnShutdown(func(_ context.Context) error {
+		lc := app.New()
+		lc.OnRun(func(_ context.Context) error {
 			hook1Called++
 			close(doneCh)
 			return nil
 		})
 
-		lc.OnShutdown(func(_ context.Context) error {
+		lc.OnRun(func(_ context.Context) error {
 			return errors.New("random error")
 		})
 
-		lc.OnShutdown(func(_ context.Context) error {
+		lc.OnRun(func(_ context.Context) error {
 			return errors.New("random error")
 		})
 
-		require.EqualError(t, lc.Shutdown(context.Background()), "random error")
+		require.EqualError(t, lc.Run(context.Background()), "random error")
 		select {
 		case <-doneCh:
 			require.Equal(t, 1, hook1Called)
 		case <-time.After(100 * time.Millisecond):
-			require.Fail(t, "test time out")
+			require.Fail(t, "test timed out")
 		}
 	})
 
-	t.Run("should return an error if Shutdown is called twice", func(t *testing.T) {
+	t.Run("should propergate the error from OnShutdown hook", func(t *testing.T) {
 		hook1Called := 0
+		doneCh := make(chan struct{})
 
-		lc := &app.DefaultLifecycle{}
+		lc := app.New()
 		lc.OnShutdown(func(_ context.Context) error {
 			hook1Called++
-			return nil
+			return errors.New("random error")
 		})
 
-		require.NoError(t, lc.Shutdown(context.Background()))
-		require.Equal(t, 1, hook1Called)
-		require.EqualError(t, lc.Shutdown(context.Background()), "app: Shutdown has been called")
+		go func() {
+			require.EqualError(t, lc.Run(context.Background()), "random error")
+			close(doneCh)
+		}()
+
+		require.EqualError(t, lc.Shutdown(context.Background()), "random error")
+
+		select {
+		case <-doneCh:
+			require.Equal(t, 1, hook1Called)
+		case <-time.After(100 * time.Millisecond):
+			require.Fail(t, "test timed out")
+		}
 	})
 }

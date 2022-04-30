@@ -5,7 +5,6 @@ import (
 
 	"github.com/bongnv/sen/app"
 	"github.com/bongnv/sen/factory"
-	"github.com/bongnv/sen/shutdown"
 )
 
 type Foo struct{}
@@ -27,7 +26,7 @@ func (f *FooFactory) New(ctx context.Context) (*Foo, error) {
 func Run() error {
 	ctx := context.Background()
 	app := app.New(
-		shutdown.New(),
+		app.GracefulShutdown(),
 		app.Component("some-foo", &Foo{}),
 		factory.Component[*Foo]("component-only", &FooFactory{}),
 		factory.Service[*Foo]("some", &FooFactory{}),

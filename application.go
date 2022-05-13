@@ -9,7 +9,7 @@ import (
 type Hook func(ctx context.Context) error
 
 // Application represents an application.
-// To construct an application from plugins use Apply. For example:
+// To construct an application from plugins use, Apply. For example:
 // app := sen.New()
 // if err := app.Apply(plugin1, plugin2); err != nil {
 //    handleError(err)

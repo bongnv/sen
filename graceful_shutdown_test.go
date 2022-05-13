@@ -1,4 +1,4 @@
-package app_test
+package sen_test
 
 import (
 	"context"
@@ -8,15 +8,15 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bongnv/sen/app"
+	"github.com/bongnv/sen"
 )
 
 type mockWaitingPlugin struct {
-	App   *app.Application `inject:"app"`
+	App   *sen.Application `inject:"app"`
 	ready chan struct{}
 }
 
-func (p *mockWaitingPlugin) Apply(ctx context.Context) error {
+func (p *mockWaitingPlugin) Init() error {
 	waitCh := make(chan error)
 	p.App.OnRun(func(ctx context.Context) error {
 		close(p.ready)
@@ -39,10 +39,11 @@ func makeMockWaitingPlugin() *mockWaitingPlugin {
 
 func TestGracefulShutdown(t *testing.T) {
 	t.Run("should exit the app if no background job", func(t *testing.T) {
-		app := app.New(app.GracefulShutdown())
+		a := sen.New()
+		require.NoError(t, a.Apply(sen.GracefulShutdown()))
 		doneCh := make(chan struct{})
 		go func() {
-			err := app.Run(context.Background())
+			err := a.Run(context.Background())
 			require.NoError(t, err)
 			close(doneCh)
 		}()
@@ -55,10 +56,12 @@ func TestGracefulShutdown(t *testing.T) {
 	})
 
 	t.Run("should exit the app if shutdown is called", func(t *testing.T) {
-		app := app.New(
-			app.GracefulShutdown(),
+		app := sen.New()
+		err := app.Apply(
+			sen.GracefulShutdown(),
 			makeMockWaitingPlugin(),
 		)
+		require.NoError(t, err)
 
 		doneCh := make(chan struct{})
 		go func() {
@@ -77,10 +80,12 @@ func TestGracefulShutdown(t *testing.T) {
 
 	t.Run("should exit the app if SIGTERM signal is received", func(t *testing.T) {
 		m := makeMockWaitingPlugin()
-		app := app.New(
-			app.GracefulShutdown(),
+		app := sen.New()
+		err := app.Apply(
+			sen.GracefulShutdown(),
 			m,
 		)
+		require.NoError(t, err)
 
 		doneCh := make(chan struct{})
 		go func() {

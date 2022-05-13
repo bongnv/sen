@@ -1,4 +1,4 @@
-package app_test
+package sen_test
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bongnv/sen/app"
+	"github.com/bongnv/sen"
 )
 
 func TestApplication(t *testing.T) {
@@ -16,7 +16,7 @@ func TestApplication(t *testing.T) {
 		hook1Called := 0
 		hook2Called := 0
 
-		lc := app.New()
+		lc := sen.New()
 		lc.OnRun(func(_ context.Context) error {
 			hook1Called++
 			return nil
@@ -37,7 +37,7 @@ func TestApplication(t *testing.T) {
 		hook2Called := 0
 		doneCh := make(chan struct{})
 
-		lc := app.New()
+		lc := sen.New()
 		lc.OnShutdown(func(_ context.Context) error {
 			hook1Called++
 			return nil
@@ -67,7 +67,7 @@ func TestApplication(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})
 
-		lc := app.New()
+		lc := sen.New()
 		lc.OnRun(func(_ context.Context) error {
 			hook1Called++
 			close(doneCh)
@@ -95,7 +95,7 @@ func TestApplication(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})
 
-		lc := app.New()
+		lc := sen.New()
 		lc.OnShutdown(func(_ context.Context) error {
 			hook1Called++
 			return errors.New("random error")

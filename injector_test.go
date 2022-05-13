@@ -1,11 +1,11 @@
-package app_test
+package sen_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bongnv/sen/app"
+	"github.com/bongnv/sen"
 )
 
 type mockComponent struct {
@@ -14,7 +14,7 @@ type mockComponent struct {
 
 func TestInjector(t *testing.T) {
 	t.Run("should return error if there is no registered dependency", func(t *testing.T) {
-		injector := app.NewInjector()
+		injector := sen.NewInjector()
 		err := injector.Inject(&mockComponent{})
 		require.EqualError(t, err, "injector: data is not registered")
 	})

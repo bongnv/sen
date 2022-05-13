@@ -1,4 +1,4 @@
-package app
+package sen
 
 import (
 	"context"
@@ -18,7 +18,7 @@ func GracefulShutdown() Plugin {
 	return &GracefulShutdownPlugin{}
 }
 
-func (s *GracefulShutdownPlugin) Apply(ctx context.Context) error {
+func (s *GracefulShutdownPlugin) Init() error {
 	shutdownCh := make(chan struct{})
 
 	if err := s.App.Register("graceful-shutdown", s); err != nil {
@@ -33,14 +33,17 @@ func (s *GracefulShutdownPlugin) Apply(ctx context.Context) error {
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
 
-	go func() {
-		select {
-		case <-exit:
-			_ = s.App.Shutdown(ctx)
-		case <-ctx.Done():
-		case <-shutdownCh:
-		}
-	}()
+	s.App.OnRun(func(ctx context.Context) error {
+		go func() {
+			select {
+			case <-exit:
+				_ = s.App.Shutdown(ctx)
+			case <-ctx.Done():
+			case <-shutdownCh:
+			}
+		}()
+		return nil
+	})
 
 	return nil
 }

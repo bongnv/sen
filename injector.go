@@ -1,4 +1,4 @@
-package app
+package sen
 
 import (
 	"fmt"
@@ -10,15 +10,7 @@ const (
 	injectTag        = "inject"
 )
 
-// Injector implements dependency injection.
-type Injector interface {
-	// Register injects dependencies into a component and register the component into the depdenency container
-	// for the next injection.
-	Register(name string, component interface{}) error
-	Inject(component interface{}) error
-}
-
-func newInjector() Injector {
+func newInjector() *defaultInjector {
 	return &defaultInjector{
 		dependencies: make(map[string]*dependency),
 	}
@@ -34,6 +26,8 @@ type defaultInjector struct {
 	dependencies map[string]*dependency
 }
 
+// Register injects dependencies into a component and register the component into the depdenency container
+// for the next injection.
 func (injector *defaultInjector) Register(name string, component interface{}) error {
 	if err := injector.validateNamne(name); err != nil {
 		return err

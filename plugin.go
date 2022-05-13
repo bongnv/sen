@@ -1,14 +1,12 @@
-package app
-
-import "context"
+package sen
 
 // Plugin represents a plugin in a sen application. It enhances the application
 // by proving one or multiple functionalities.
 // A plugin can have from zero to many dependencies and they can be injected
 // by declaring "inject" tag.
 type Plugin interface {
-	// Apply initialises the plugin and installs the plugin into the application.
-	Apply(ctx context.Context) error
+	// Init initialises the plugin and installs the plugin into the application.
+	Init() error
 }
 
 // ComponentPlugin is a simple plugin to add a component into the application.
@@ -21,7 +19,7 @@ type ComponentPlugin struct {
 }
 
 // Apply adds the component to the application as a named dependency.
-func (p *ComponentPlugin) Apply(ctx context.Context) error {
+func (p *ComponentPlugin) Init() error {
 	return p.App.Register(p.Name, p.Component)
 }
 
@@ -47,11 +45,16 @@ func Module(plugins ...Plugin) Plugin {
 }
 
 // Apply installs plugins into the application.
-func (m *ModulePlugin) Apply(ctx context.Context) error {
+func (m *ModulePlugin) Init() error {
 	for _, p := range m.Plugins {
-		if err := m.App.ApplyPlugin(ctx, p); err != nil {
+		if err := m.App.Inject(p); err != nil {
 			return err
 		}
+
+		if err := p.Init(); err != nil {
+			return err
+		}
+
 	}
 
 	return nil

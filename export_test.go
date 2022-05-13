@@ -1,3 +1,3 @@
-package app
+package sen
 
 var NewInjector = newInjector

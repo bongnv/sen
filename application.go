@@ -1,23 +1,22 @@
-package app
+package sen
 
 import (
 	"context"
 	"sync"
 )
 
-// there are 2 ways it can be implemented:
-// Using factory: nicer, isolated
-// Injecting immediately, how to handle error?
-// we need to inject immediately so application can inject further components while doing it
-// how do we handle error? returning error always is annoying
-
 // Hook represents a hook which allows to customise the application life cycle.
 type Hook func(ctx context.Context) error
 
+// Application represents an application.
+// To construct an application from plugins use, Apply. For example:
+// app := sen.New()
+// if err := app.Apply(plugin1, plugin2); err != nil {
+//    handleError(err)
+// }
 type Application struct {
-	Injector
+	*defaultInjector
 
-	plugins           Plugin
 	runHooks          []Hook
 	shutdownHooks     []Hook
 	postShutdownHooks []Hook
@@ -27,14 +26,15 @@ type Application struct {
 	shutdownCh        chan struct{}
 }
 
-func New(plugins ...Plugin) *Application {
+// New creates a new Application.
+func New() *Application {
 	app := &Application{
-		plugins:        Module(plugins...),
-		Injector:       newInjector(),
-		shutdownDoneCh: make(chan struct{}),
-		shutdownCh:     make(chan struct{}),
+		defaultInjector: newInjector(),
+		shutdownDoneCh:  make(chan struct{}),
+		shutdownCh:      make(chan struct{}),
 	}
 
+	_ = app.Register("app", app)
 	return app
 }
 
@@ -53,14 +53,6 @@ func (app *Application) OnShutdown(h Hook) {
 func (app *Application) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-
-	if err := app.Register("app", app); err != nil {
-		return err
-	}
-
-	if err := app.ApplyPlugin(ctx, app.plugins); err != nil {
-		return err
-	}
 
 	runErrCh := executeHooks(ctx, app.runHooks)
 	var runErr error
@@ -97,12 +89,15 @@ func (app *Application) Shutdown(ctx context.Context) error {
 	}
 }
 
-func (app *Application) ApplyPlugin(ctx context.Context, p Plugin) error {
+// Apply applies a plugin or multiple plugins.
+// While applying the plugin, Init method will be called.
+func (app *Application) Apply(plugins ...Plugin) error {
+	p := Module(plugins...)
 	if err := app.Inject(p); err != nil {
 		return err
 	}
 
-	return p.Apply(ctx)
+	return p.Init()
 }
 
 func executeHooks(ctx context.Context, hooks []Hook) <-chan error {

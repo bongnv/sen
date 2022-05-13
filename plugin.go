@@ -9,23 +9,23 @@ type Plugin interface {
 	Init() error
 }
 
-// ComponentPlugin is a simple plugin to add a component into the application.
-// The component should have a name so it will be used as a dependency and
-// will be injected to other components when needed.
-type ComponentPlugin struct {
+type componentPlugin struct {
 	App       *Application `inject:"app"`
 	Name      string
 	Component interface{}
 }
 
 // Apply adds the component to the application as a named dependency.
-func (p *ComponentPlugin) Init() error {
+func (p *componentPlugin) Init() error {
 	return p.App.Register(p.Name, p.Component)
 }
 
-// Component creates a new ComponentPlugin.
+// Component creates a new component plugin.
+// It is a simple plugin to add a component into the application.
+// The component should have a name so it will be used as a dependency and
+// will be injected to other components when needed.
 func Component(name string, c interface{}) Plugin {
-	return &ComponentPlugin{
+	return &componentPlugin{
 		Name:      name,
 		Component: c,
 	}

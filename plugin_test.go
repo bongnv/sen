@@ -8,6 +8,14 @@ import (
 	"github.com/bongnv/sen"
 )
 
+type mockPlugin struct {
+	Data int `inject:"data"`
+}
+
+func (mockPlugin) Init() error {
+	return nil
+}
+
 func TestComponent(t *testing.T) {
 	t.Run("should register a component into the application", func(t *testing.T) {
 		component := &mockComponent{}
@@ -45,6 +53,16 @@ func TestModule(t *testing.T) {
 			sen.Component("error-plugin", &mockComponent{}),
 			sen.Component("ok-plugin", 10),
 		)
+		app := sen.New()
+		err := app.Apply(m)
+		require.EqualError(t, err, "injector: data is not registered")
+	})
+
+	t.Run("should propagate error if one plugin doesn't have enough dependencies", func(t *testing.T) {
+		m := sen.Module(
+			&mockPlugin{},
+		)
+
 		app := sen.New()
 		err := app.Apply(m)
 		require.EqualError(t, err, "injector: data is not registered")

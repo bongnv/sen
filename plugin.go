@@ -15,7 +15,7 @@ type componentPlugin struct {
 	Component interface{}
 }
 
-// Apply adds the component to the application as a named dependency.
+// Init adds the component to the application as a named dependency.
 func (p *componentPlugin) Init() error {
 	return p.App.Register(p.Name, p.Component)
 }
@@ -44,7 +44,7 @@ func Module(plugins ...Plugin) Plugin {
 	}
 }
 
-// Apply installs plugins into the application.
+// Init installs plugins into the application.
 func (m *ModulePlugin) Init() error {
 	for _, p := range m.Plugins {
 		if err := m.App.Inject(p); err != nil {
@@ -54,7 +54,6 @@ func (m *ModulePlugin) Init() error {
 		if err := p.Init(); err != nil {
 			return err
 		}
-
 	}
 
 	return nil

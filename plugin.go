@@ -54,7 +54,6 @@ func (m *ModulePlugin) Init() error {
 		if err := p.Init(); err != nil {
 			return err
 		}
-
 	}
 
 	return nil

@@ -67,9 +67,23 @@ func TestPlugin(t *testing.T) {
 		}()
 
 		select {
-		case <-time.After(100 * time.Millisecond):
+		case <-time.After(1000 * time.Millisecond):
 			require.Fail(t, "test timed out")
 		case <-shutdownDoneCh:
 		}
+	})
+
+	t.Run("should return an error when grpc.server is already registered", func(t *testing.T) {
+		require.NoError(t, os.Setenv("GRPC_ADDR", ":8080"))
+		defer os.Unsetenv("GRPC_ADDR")
+
+		app := sen.New()
+		require.NoError(t, app.Register("grpc.server", 10))
+		err := app.Apply(
+			grpc.EnvConfigPlugin(),
+			grpc.Plugin(),
+		)
+
+		require.EqualError(t, err, "injector: grpc.server is already registered")
 	})
 }

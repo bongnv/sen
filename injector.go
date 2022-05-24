@@ -1,6 +1,7 @@
 package sen
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 )
@@ -8,6 +9,12 @@ import (
 const (
 	autoInjectionTag = "*"
 	injectTag        = "inject"
+)
+
+var (
+	// ErrComponentNotRegistered is returned when the expected component isn't registered
+	// so it couldn't be found by name.
+	ErrComponentNotRegistered = errors.New("sen: the component is not registered")
 )
 
 func newInjector() *defaultInjector {
@@ -46,6 +53,16 @@ func (injector *defaultInjector) Register(name string, component interface{}) er
 	injector.dependencies[name] = toAddDep
 
 	return nil
+}
+
+// Retrieve retrieves a component via name. It returns an error if there is any.
+func (injector *defaultInjector) Retrieve(name string) (interface{}, error) {
+	loadedDep, found := injector.dependencies[name]
+	if !found {
+		return nil, ErrComponentNotRegistered
+	}
+
+	return loadedDep.value, nil
 }
 
 func (injector *defaultInjector) Inject(component interface{}) error {

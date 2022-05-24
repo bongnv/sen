@@ -115,4 +115,29 @@ func TestApplication(t *testing.T) {
 			require.Fail(t, "test timed out")
 		}
 	})
+
+	t.Run("should run OnPostShutdown hook", func(t *testing.T) {
+		hook1Called := 0
+		doneCh := make(chan struct{})
+
+		app := sen.New()
+		app.OnPostShutdown(func(_ context.Context) error {
+			hook1Called++
+			return nil
+		})
+
+		go func() {
+			require.NoError(t, app.Run(context.Background()))
+			close(doneCh)
+		}()
+
+		require.NoError(t, app.Shutdown(context.Background()))
+
+		select {
+		case <-doneCh:
+			require.Equal(t, 1, hook1Called)
+		case <-time.After(100 * time.Millisecond):
+			require.Fail(t, "test timed out")
+		}
+	})
 }

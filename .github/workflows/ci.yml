@@ -55,9 +55,12 @@ jobs:
     needs: [lint, test]
     if: github.ref == 'refs/heads/main'
     permissions:
-      contents: read|write
+      contents: write
     steps:
       - uses: actions/checkout@v3
-      - uses: go-semantic-release/action@v1
+      - uses: actions/setup-node@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 16
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release

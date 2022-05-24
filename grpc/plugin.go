@@ -58,9 +58,6 @@ func (p *basePlugin) Init() error {
 	}
 
 	grpcServer := grpc.NewServer(p.Config.ServerOptions...)
-	if err := p.App.Register("grpc.server", grpcServer); err != nil {
-		return err
-	}
 
 	p.App.OnRun(func(ctx context.Context) error {
 		return grpcServer.Serve(lis)
@@ -80,5 +77,6 @@ func (p *basePlugin) Init() error {
 			return nil
 		}
 	})
-	return nil
+
+	return p.App.Register("grpc.server", grpcServer)
 }

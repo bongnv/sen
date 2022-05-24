@@ -49,6 +49,12 @@ func (app *Application) OnShutdown(h Hook) {
 	app.shutdownHooks = append(app.shutdownHooks, h)
 }
 
+// OnPostShutdown adds additional logic to run after the app is shut down.
+// These logic will be executed after shutdown logic.
+func (app *Application) OnPostShutdown(h Hook) {
+	app.postShutdownHooks = append(app.postShutdownHooks, h)
+}
+
 // Run runs the application by executing all the registered hooks for this phase.
 func (app *Application) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)

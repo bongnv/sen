@@ -54,6 +54,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, test]
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read|write
     steps:
       - uses: actions/checkout@v3
       - uses: go-semantic-release/action@v1

@@ -2,5 +2,11 @@ package sen
 
 import "github.com/bongnv/sen/app"
 
-// New creates a new sen application.
+// Forward definitions to app
 var New = app.New
+
+// Forward definitions to app
+type (
+	Plugin      = app.Plugin
+	Application = app.Application
+)

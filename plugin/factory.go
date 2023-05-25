@@ -1,31 +1,33 @@
-package sen
+package plugin
 
-// IFactory is an interface to wrap New method.
+import "github.com/bongnv/sen/app"
+
+// Factory is an interface to wrap New method.
 // It represents a factory to create components.
-type IFactory[T any] interface {
+type Factory[T any] interface {
 	New() (T, error)
 }
 
-// Factory creates a new plugin from a factory.
+// Provider creates a new plugin from a factory to provide a new component.
 // The plugin will call New method in the given factory to create a new component.
 // The component will then be registered into the application.
 //
 // The factory is useful when we need some dependencies to initialise a component.
-func Factory[T any](name string, f IFactory[T]) Plugin {
-	return &factoryPlugin[T]{
+func Provider[T any](name string, f Factory[T]) app.Plugin {
+	return &providerPlugin[T]{
 		Factory: f,
 		Name:    name,
 	}
 }
 
-type factoryPlugin[T any] struct {
-	App     *Application `inject:"app"`
-	Factory IFactory[T]
+type providerPlugin[T any] struct {
+	App     *app.Application `inject:"app"`
+	Factory Factory[T]
 	Name    string
 }
 
 // Init initialises creates the component and registers it to the application.
-func (p *factoryPlugin[_]) Init() error {
+func (p *providerPlugin[_]) Initialize() error {
 	if err := p.App.Inject(p.Factory); err != nil {
 		return err
 	}

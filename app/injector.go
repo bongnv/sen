@@ -1,4 +1,4 @@
-package sen
+package app
 
 import (
 	"errors"
@@ -11,11 +11,9 @@ const (
 	injectTag        = "inject"
 )
 
-var (
-	// ErrComponentNotRegistered is returned when the expected component isn't registered
-	// so it couldn't be found by name.
-	ErrComponentNotRegistered = errors.New("sen: the component is not registered")
-)
+// ErrComponentNotRegistered is returned when the expected component isn't registered
+// so it couldn't be found by name.
+var ErrComponentNotRegistered = errors.New("sen: the component is not registered")
 
 func newInjector() *defaultInjector {
 	return &defaultInjector{
@@ -65,6 +63,7 @@ func (injector *defaultInjector) Retrieve(name string) (interface{}, error) {
 	return loadedDep.value, nil
 }
 
+// Inject injects dependencies into a component.
 func (injector *defaultInjector) Inject(component interface{}) error {
 	toAddDep := &dependency{
 		value:        component,

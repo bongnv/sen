@@ -1,2 +1,1 @@
-We don't want to expose too many APIs that can alter Application. It will confuse users.
-We want to have a simple API
+sen is a Go library that allows to build an application by combining different plugins. The richer the community is, the more powerful sen is.

@@ -1,4 +1,4 @@
-package sen
+package app
 
 import (
 	"errors"
@@ -65,6 +65,7 @@ func (injector *defaultInjector) Retrieve(name string) (interface{}, error) {
 	return loadedDep.value, nil
 }
 
+// Inject injects dependencies into a component.
 func (injector *defaultInjector) Inject(component interface{}) error {
 	toAddDep := &dependency{
 		value:        component,

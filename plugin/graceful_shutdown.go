@@ -1,24 +1,26 @@
-package sen
+package plugin
 
 import (
 	"context"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/bongnv/sen/app"
 )
 
-// GracefulShutdownPlugin is a plugin to allow the application to receive SIGTERM signal
-// and shuts down the application gracefully.
-type GracefulShutdownPlugin struct {
-	App *Application `inject:"app"`
-}
-
 // GracefulShutdown creates a new GracefulShutdownPlugin.
-func GracefulShutdown() Plugin {
-	return &GracefulShutdownPlugin{}
+func GracefulShutdown() app.Plugin {
+	return &gracefulShutdownPlugin{}
 }
 
-func (s *GracefulShutdownPlugin) Init() error {
+// gracefulShutdownPlugin is a plugin to allow the application to receive SIGTERM signal
+// and shuts down the application gracefully.
+type gracefulShutdownPlugin struct {
+	App *app.Application `inject:"*"`
+}
+
+func (s *gracefulShutdownPlugin) Initialize() error {
 	shutdownCh := make(chan struct{})
 
 	if err := s.App.Register("graceful-shutdown", s); err != nil {

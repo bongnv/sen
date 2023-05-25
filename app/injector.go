@@ -11,11 +11,9 @@ const (
 	injectTag        = "inject"
 )
 
-var (
-	// ErrComponentNotRegistered is returned when the expected component isn't registered
-	// so it couldn't be found by name.
-	ErrComponentNotRegistered = errors.New("sen: the component is not registered")
-)
+// ErrComponentNotRegistered is returned when the expected component isn't registered
+// so it couldn't be found by name.
+var ErrComponentNotRegistered = errors.New("sen: the component is not registered")
 
 func newInjector() *defaultInjector {
 	return &defaultInjector{

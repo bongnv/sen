@@ -1,11 +1,10 @@
-package plugin_test
+package sen_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/bongnv/sen/app"
-	"github.com/bongnv/sen/plugin"
+	"github.com/bongnv/sen"
 )
 
 const dataInjectErrMsg = "injector: data is not registered"
@@ -18,17 +17,13 @@ func (mockPlugin) Initialize() error {
 	return nil
 }
 
-type mockComponent struct {
-	Data int `inject:"data"`
-}
-
 func TestComponent(t *testing.T) {
 	t.Run("should register a component into the application", func(t *testing.T) {
 		component := &mockComponent{}
-		app := app.New()
+		app := sen.New()
 		err := app.With(
-			plugin.Component("data", 10),
-			plugin.Component("need-data", component),
+			sen.Component("data", 10),
+			sen.Component("need-data", component),
 		)
 		if err != nil {
 			t.Errorf("Unexpected err %v", err)
@@ -40,8 +35,8 @@ func TestComponent(t *testing.T) {
 
 	t.Run("should propergate error if a component cannot be registered", func(t *testing.T) {
 		component := &mockComponent{}
-		app := app.New()
-		err := app.With(plugin.Component("need-data", component))
+		app := sen.New()
+		err := app.With(sen.Component("need-data", component))
 		if fmt.Sprintf("%v", err) != dataInjectErrMsg {
 			t.Errorf("Unexpected err %v", err)
 		}
@@ -51,11 +46,11 @@ func TestComponent(t *testing.T) {
 func TestModule(t *testing.T) {
 	t.Run("should apply all plugins into the application", func(t *testing.T) {
 		component := &mockComponent{}
-		m := plugin.Module(
-			plugin.Component("data", 10),
-			plugin.Component("need-data", component),
+		m := sen.Module(
+			sen.Component("data", 10),
+			sen.Component("need-data", component),
 		)
-		app := app.New()
+		app := sen.New()
 		err := app.With(m)
 		if err != nil {
 			t.Errorf("Unexpected err %v", err)
@@ -66,11 +61,11 @@ func TestModule(t *testing.T) {
 	})
 
 	t.Run("should propagate error if one plugin returns error", func(t *testing.T) {
-		m := plugin.Module(
-			plugin.Component("error-plugin", &mockComponent{}),
-			plugin.Component("ok-plugin", 10),
+		m := sen.Module(
+			sen.Component("error-plugin", &mockComponent{}),
+			sen.Component("ok-plugin", 10),
 		)
-		app := app.New()
+		app := sen.New()
 		err := app.With(m)
 		if fmt.Sprintf("%v", err) != dataInjectErrMsg {
 			t.Errorf("Unexpected err %v", err)
@@ -78,11 +73,11 @@ func TestModule(t *testing.T) {
 	})
 
 	t.Run("should propagate error if one plugin doesn't have enough dependencies", func(t *testing.T) {
-		m := plugin.Module(
+		m := sen.Module(
 			&mockPlugin{},
 		)
 
-		app := app.New()
+		app := sen.New()
 		err := app.With(m)
 		if fmt.Sprintf("%v", err) != dataInjectErrMsg {
 			t.Errorf("Unexpected err %v", err)

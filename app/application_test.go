@@ -115,6 +115,35 @@ func TestApplication(t *testing.T) {
 		}
 	})
 
+	t.Run("should call Shutdown if a hook from OnRun returns an error", func(t *testing.T) {
+		hook1Called := 0
+		hook2Called := 0
+
+		lc := app.New()
+		lc.OnRun(func(_ context.Context) error {
+			hook1Called++
+			return errors.New("run error")
+		})
+
+		lc.OnShutdown(func(ctx context.Context) error {
+			hook2Called++
+			return nil
+		})
+
+		err := lc.Run(context.Background())
+		if fmt.Sprintf("%v", err) != "run error" {
+			t.Errorf("Unexpected error: %v", err)
+		}
+
+		if hook1Called != 1 {
+			t.Errorf("Expected hook1 is called but got %d", hook1Called)
+		}
+
+		if hook2Called != 1 {
+			t.Errorf("Expected hook2 is called once but got %d", hook2Called)
+		}
+	})
+
 	t.Run("should run AfterRun hook", func(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})

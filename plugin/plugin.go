@@ -3,7 +3,7 @@ package plugin
 import "github.com/bongnv/sen/app"
 
 type componentPlugin struct {
-	App *app.Application `inject:"*"`
+	App *app.Application `inject:"app"`
 
 	name      string
 	component any

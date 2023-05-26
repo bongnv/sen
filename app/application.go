@@ -32,8 +32,7 @@ type Application struct {
 	runHooks      []Hook
 	shutdownHooks []Hook
 	afterRunHooks []Hook
-	shutdownErr   error
-	shutdownOnce  sync.Once
+	shutdownOnce  func(ctx context.Context) error
 }
 
 // New creates a new Application.
@@ -42,7 +41,9 @@ func New() *Application {
 		injector: newInjector(),
 	}
 
+	app.shutdownOnce = runOnce(app.internalShutdown)
 	_ = app.Register("app", app)
+
 	return app
 }
 
@@ -67,7 +68,8 @@ func (app *Application) OnRun(h Hook) {
 	app.runHooks = append(app.runHooks, h)
 }
 
-// AfterRun adds additional logic after all services stop running.
+// AfterRun adds additional logic after all services stop running
+// and shutdown logic is executed.
 // It's useful for syncing logs, etc.
 func (app *Application) AfterRun(h Hook) {
 	app.shutdownHooks = append(app.afterRunHooks, h)
@@ -79,22 +81,24 @@ func (app *Application) OnShutdown(h Hook) {
 }
 
 // Run runs the application by executing all the registered hooks for this phase.
-func (app *Application) Run(ctx context.Context) error {
-	err := executeHooks(ctx, app.runHooks)
-	if err != nil {
-		return err
+func (app *Application) Run(ctx context.Context) (err error) {
+	err = executeHooks(ctx, app.runHooks)
+	shutdownErr := app.shutdownOnce(ctx)
+	if shutdownErr != nil && err == nil {
+		err = shutdownErr
 	}
 
-	return executeHooks(ctx, app.afterRunHooks)
+	afterRunErr := executeHooks(ctx, app.afterRunHooks)
+	if afterRunErr != nil && err == nil {
+		err = afterRunErr
+	}
+
+	return
 }
 
 // Shutdown runs the application by executing all the registered hooks for this phase.
 func (app *Application) Shutdown(ctx context.Context) error {
-	app.shutdownOnce.Do(func() {
-		app.shutdownErr = executeHooks(ctx, app.shutdownHooks)
-	})
-
-	return app.shutdownErr
+	return app.shutdownOnce(ctx)
 }
 
 // With applies a plugin or multiple plugins.
@@ -114,6 +118,12 @@ func (app *Application) With(plugins ...Plugin) error {
 	return nil
 }
 
+// internalShutdown is the internal implementation of the shutdown function.
+// It shouldn't be called multiple times so it should be wrapped to run once only.
+func (app *Application) internalShutdown(ctx context.Context) error {
+	return executeHooks(ctx, app.shutdownHooks)
+}
+
 func executeHooks(ctx context.Context, hooks []Hook) error {
 	eg, ctx := errgroup.WithContext(ctx)
 	for _, h := range hooks {
@@ -124,4 +134,21 @@ func executeHooks(ctx context.Context, hooks []Hook) error {
 	}
 
 	return eg.Wait()
+}
+
+// runOnce allows creates a function that will call fn only once.
+// It's different from sync.Once that, all calls will be blocked and returns
+// the error from the single call of fn.
+func runOnce(fn func(ctx context.Context) error) func(ctx context.Context) error {
+	var err error
+	once := &sync.Once{}
+	done := make(chan struct{})
+	return func(ctx context.Context) error {
+		once.Do(func() {
+			err = fn(ctx)
+			close(done)
+		})
+		<-done
+		return err
+	}
 }

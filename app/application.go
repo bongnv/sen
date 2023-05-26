@@ -148,7 +148,11 @@ func runOnce(fn func(ctx context.Context) error) func(ctx context.Context) error
 			err = fn(ctx)
 			close(done)
 		})
-		<-done
-		return err
+		select {
+		case <-done:
+			return err
+		case <-ctx.Done():
+			return ctx.Err()
+		}
 	}
 }

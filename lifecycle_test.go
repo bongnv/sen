@@ -1,4 +1,4 @@
-package app_test
+package sen_test
 
 import (
 	"context"
@@ -7,15 +7,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bongnv/sen/app"
+	"github.com/bongnv/sen"
 )
 
-func TestApplication(t *testing.T) {
+func TestLifecycle(t *testing.T) {
 	t.Run("should run all hooks for OnRun stage", func(t *testing.T) {
 		hook1Called := 0
 		hook2Called := 0
 
-		lc := app.New()
+		lc := sen.NewLifecycle()
 		lc.OnRun(func(_ context.Context) error {
 			hook1Called++
 			return nil
@@ -45,7 +45,7 @@ func TestApplication(t *testing.T) {
 		hook2Called := 0
 		doneCh := make(chan struct{})
 
-		lc := app.New()
+		lc := sen.NewLifecycle()
 		lc.OnShutdown(func(_ context.Context) error {
 			hook1Called++
 			return nil
@@ -86,7 +86,7 @@ func TestApplication(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})
 
-		lc := app.New()
+		lc := sen.NewLifecycle()
 		lc.OnRun(func(_ context.Context) error {
 			hook1Called++
 			close(doneCh)
@@ -119,7 +119,7 @@ func TestApplication(t *testing.T) {
 		hook1Called := 0
 		hook2Called := 0
 
-		lc := app.New()
+		lc := sen.NewLifecycle()
 		lc.OnRun(func(_ context.Context) error {
 			hook1Called++
 			return errors.New("run error")
@@ -148,21 +148,21 @@ func TestApplication(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})
 
-		app := app.New()
-		app.AfterRun(func(_ context.Context) error {
+		lc := sen.NewLifecycle()
+		lc.AfterRun(func(_ context.Context) error {
 			hook1Called++
 			return nil
 		})
 
 		go func() {
-			err := app.Run(context.Background())
+			err := lc.Run(context.Background())
 			if err != nil {
 				t.Errorf("Expected no error")
 			}
 			close(doneCh)
 		}()
 
-		err := app.Shutdown(context.Background())
+		err := lc.Shutdown(context.Background())
 		if err != nil {
 			t.Errorf("Expected no error")
 		}

@@ -1,4 +1,4 @@
-package plugin_test
+package sen_test
 
 import (
 	"context"
@@ -6,23 +6,22 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bongnv/sen/app"
-	"github.com/bongnv/sen/plugin"
+	"github.com/bongnv/sen"
 )
 
 type mockWaitingPlugin struct {
-	App   *app.Application `inject:"app"`
+	Lc    sen.Lifecycle `inject:"lifecycle"`
 	ready chan struct{}
 }
 
 func (p *mockWaitingPlugin) Initialize() error {
 	waitCh := make(chan error)
-	p.App.OnRun(func(ctx context.Context) error {
+	p.Lc.OnRun(func(ctx context.Context) error {
 		close(p.ready)
 		return <-waitCh
 	})
 
-	p.App.OnShutdown(func(ctx context.Context) error {
+	p.Lc.OnShutdown(func(ctx context.Context) error {
 		close(waitCh)
 		return nil
 	})
@@ -38,8 +37,8 @@ func makeMockWaitingPlugin() *mockWaitingPlugin {
 
 func TestGracefulShutdown(t *testing.T) {
 	t.Run("should exit the app if no background job", func(t *testing.T) {
-		a := app.New()
-		err := a.With(plugin.GracefulShutdown())
+		a := sen.New()
+		err := a.With(sen.GracefulShutdown())
 		if err != nil {
 			t.Errorf("Unexpected err %v", err)
 		}
@@ -60,9 +59,9 @@ func TestGracefulShutdown(t *testing.T) {
 	})
 
 	t.Run("should exit the app if shutdown is called", func(t *testing.T) {
-		app := app.New()
+		app := sen.New()
 		err := app.With(
-			plugin.GracefulShutdown(),
+			sen.GracefulShutdown(),
 			makeMockWaitingPlugin(),
 		)
 		if err != nil {
@@ -91,9 +90,9 @@ func TestGracefulShutdown(t *testing.T) {
 
 	t.Run("should exit the app if SIGTERM signal is received", func(t *testing.T) {
 		m := makeMockWaitingPlugin()
-		app := app.New()
+		app := sen.New()
 		err := app.With(
-			plugin.GracefulShutdown(),
+			sen.GracefulShutdown(),
 			m,
 		)
 		if err != nil {

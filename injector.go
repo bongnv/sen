@@ -1,13 +1,15 @@
-package app
+package sen
 
 import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 const (
 	autoInjectionTag = "*"
+	optionalTag      = "optional"
 	injectTag        = "inject"
 )
 
@@ -15,10 +17,20 @@ const (
 // so it couldn't be found by name.
 var ErrComponentNotRegistered = errors.New("sen: the component is not registered")
 
-func newInjector() *defaultInjector {
-	return &defaultInjector{
+// Injector is a hub of components. It allows injecting components via tags or types.
+type Injector interface {
+	Register(name string, component interface{}) error
+	Retrieve(name string) (interface{}, error)
+	Inject(component interface{}) error
+}
+
+func newInjector() Injector {
+	injector := &defaultInjector{
 		dependencies: make(map[string]*dependency),
 	}
+
+	_ = injector.Register("injector", injector)
+	return injector
 }
 
 type dependency struct {
@@ -110,6 +122,11 @@ func (injector *defaultInjector) inject(dep *dependency) error {
 			return err
 		}
 
+		if loadedDep == nil {
+			// this is an optional field and there is no suitable dependency to inject.
+			continue
+		}
+
 		if !loadedDep.reflectType.AssignableTo(fieldType) {
 			return fmt.Errorf("injector: %s is not assignable from %s", fieldType, loadedDep.reflectType)
 		}
@@ -121,19 +138,24 @@ func (injector *defaultInjector) inject(dep *dependency) error {
 }
 
 func (injector *defaultInjector) loadDepForTag(tag string, t reflect.Type) (*dependency, error) {
-	if tag == autoInjectionTag {
-		return injector.findByType(t)
+	tagName, optional, err := parseTag(tag)
+	if err != nil {
+		return nil, err
 	}
 
-	loadedDep, found := injector.dependencies[tag]
-	if !found {
-		return nil, fmt.Errorf("injector: %s is not registered", tag)
+	if tag == autoInjectionTag {
+		return injector.findByType(t, optional)
+	}
+
+	loadedDep, found := injector.dependencies[tagName]
+	if !found && !optional {
+		return nil, fmt.Errorf("injector: %s is not registered", tagName)
 	}
 
 	return loadedDep, nil
 }
 
-func (injector *defaultInjector) findByType(t reflect.Type) (*dependency, error) {
+func (injector *defaultInjector) findByType(t reflect.Type, optional bool) (*dependency, error) {
 	var foundVal *dependency
 	for _, v := range injector.dependencies {
 		if v.reflectType.AssignableTo(t) {
@@ -145,11 +167,29 @@ func (injector *defaultInjector) findByType(t reflect.Type) (*dependency, error)
 		}
 	}
 
-	if foundVal == nil {
+	if foundVal == nil && !optional {
 		return nil, fmt.Errorf("injector: couldn't find the dependency for %s", t.String())
 	}
 
 	return foundVal, nil
+}
+
+func parseTag(tag string) (string, bool, error) {
+	parts := strings.Split(tag, ",")
+	switch len(parts) {
+	case 2:
+		if parts[1] != optionalTag {
+			return "", false, fmt.Errorf("injector: %s is unexpected", parts[1])
+		}
+
+		return parts[0], parts[1] == optionalTag, nil
+	case 1:
+		return parts[0], false, nil
+	case 0:
+		return "", false, fmt.Errorf("injector: tag must not be empty")
+	default:
+		return "", false, fmt.Errorf("injector: unable to parse tag %s", tag)
+	}
 }
 
 func isStructPtr(t reflect.Type) bool {

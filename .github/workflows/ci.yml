@@ -59,4 +59,3 @@ jobs:
         with:
           command: manifest
           default-branch: beta
-          monorepo-tags: true

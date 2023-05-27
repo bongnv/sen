@@ -7,7 +7,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "include-v-in-tag": true,
-      "prerelease": false
+      "prerelease": true
     },
     "pkg/plugins/zap": {
       "changelog-path": "CHANGELOG.md",
@@ -16,7 +16,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "include-v-in-tag": true,
-      "prerelease": false
+      "prerelease": true
     },
     "pkg/sen": {
       "changelog-path": "CHANGELOG.md",
@@ -25,7 +25,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "include-v-in-tag": true,
-      "prerelease": false
+      "prerelease": true
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"

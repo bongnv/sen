@@ -1,4 +1,5 @@
 {
-  "echo": "0.0.0",
-  "zap": "0.0.0"
+  "pkg/plugins/echo": "0.0.0",
+  "pkg/plugins/zap": "0.0.0",
+  "pkg/sen": "0.0.0"
 }

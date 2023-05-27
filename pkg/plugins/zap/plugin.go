@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/bongnv/sen"
+	"github.com/bongnv/sen/pkg/sen"
 )
 
 // Plugin is a sen.Plugin that provides an instance of *zap.Logger.
@@ -30,7 +30,7 @@ func (p Plugin) Initialize() error {
 		return err
 	}
 
-	p.LC.AfterRun(func(_ context.Context) error {
+	p.LC.PostRun(func(_ context.Context) error {
 		return logger.Sync()
 	})
 

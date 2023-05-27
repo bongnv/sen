@@ -1,5 +1,5 @@
-github.com/bongnv/sen v0.3.0 h1:XCn6RnhZBH+XhU8waPknoVYlI4hvuu9VzbjzK3r3Ir4=
-github.com/bongnv/sen v0.3.0/go.mod h1:TE+1pJDzwWXgAFBy2Z9Be8nlql9phJzUxXtZT3nv7zA=
+github.com/bongnv/sen/pkg/sen v0.1.0 h1:fbdDCQ4P8jQPZkk74ZVsWgvfuud9HHckEAeoMaZjNdA=
+github.com/bongnv/sen/pkg/sen v0.1.0/go.mod h1:XB11ru0mn2h3BUB0InU6euS4MI1i429A17AbXBmKi3U=
 github.com/caarlos0/env/v8 v8.0.0 h1:POhxHhSpuxrLMIdvTGARuZqR4Jjm8AYmoi/JKlcScs0=
 github.com/caarlos0/env/v8 v8.0.0/go.mod h1:7K4wMY9bH0esiXSSHlfHLX5xKGQMnkH5Fk4TDSSSzfo=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

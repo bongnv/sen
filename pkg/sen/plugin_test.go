@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/bongnv/sen"
+	"github.com/bongnv/sen/pkg/sen"
 )
 
 const dataInjectErrMsg = "injector: data is not registered"

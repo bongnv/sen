@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bongnv/sen"
+	"github.com/bongnv/sen/pkg/sen"
 )
 
 func TestLifecycle(t *testing.T) {

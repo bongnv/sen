@@ -1,0 +1,18 @@
+mode: atomic
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:19.26,24.2 1 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:42.44,44.39 2 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:44.39,46.3 1 0
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:48.2,48.48 1 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:69.36,75.45 4 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:75.45,78.13 1 1
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:78.13,81.4 2 1
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:83.3,83.49 1 1
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:86.2,86.50 1 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:86.50,88.3 1 1
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:90.2,90.39 1 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:96.82,100.41 4 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:100.41,101.18 1 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:101.18,104.4 2 1
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:105.3,105.10 1 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:106.15,107.14 1 2
+github.com/bongnv/sen/pkg/plugins/echo/plugin.go:108.21,109.20 1 0

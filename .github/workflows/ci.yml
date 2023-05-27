@@ -12,15 +12,6 @@ env:
   GO111MODULE: on
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-      - uses: actions/checkout@v3
-      - uses: golangci/golangci-lint-action@v3
   test:
     strategy:
       matrix:
@@ -42,9 +33,13 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+      - name: Run linters
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+          ./scripts/lint.sh
       - name: Run Tests
         run: |
-          go test -race --coverprofile=coverage.coverprofile --covermode=atomic ./...
+          ./scripts/test.sh
       - name: Upload coverage to Codecov
         if: success() && matrix.go == 1.18 && matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v3
@@ -57,10 +52,4 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: latest
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+      - uses: google-github-actions/release-please-action@v3

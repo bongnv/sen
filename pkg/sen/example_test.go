@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/bongnv/sen"
+	"github.com/bongnv/sen/pkg/sen"
 )
 
 func Example() {

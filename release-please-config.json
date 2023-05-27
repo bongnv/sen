@@ -7,6 +7,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "include-v-in-tag": true,
+      "release-as": "0.1.0",
       "prerelease": true
     },
     "pkg/plugins/zap": {
@@ -16,6 +17,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "include-v-in-tag": true,
+      "release-as": "0.1.0",
       "prerelease": true
     },
     "pkg/sen": {
@@ -25,6 +27,7 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "include-v-in-tag": true,
+      "release-as": "0.1.0",
       "prerelease": true
     }
   },

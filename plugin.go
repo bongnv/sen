@@ -81,22 +81,24 @@ func (p onShutdownPlugin) Initialize() error {
 	return nil
 }
 
-// AfterRun adds multiple hooks to run with the application.
-func AfterRun(hooks ...Hook) Plugin {
-	return &afterRunPlugin{
+// PostRun adds additional logic after all services stop running
+// and shutdown logic is executed.
+// It's useful for syncing logs, etc.
+func PostRun(hooks ...Hook) Plugin {
+	return &postRunPlugin{
 		hooks: hooks,
 	}
 }
 
-type afterRunPlugin struct {
+type postRunPlugin struct {
 	LC    Lifecycle `inject:"lifecycle"`
 	hooks []Hook
 }
 
 // Initialize adds the component to the application as a named dependency.
-func (p afterRunPlugin) Initialize() error {
+func (p postRunPlugin) Initialize() error {
 	for _, h := range p.hooks {
-		p.LC.AfterRun(h)
+		p.LC.PostRun(h)
 	}
 	return nil
 }

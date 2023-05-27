@@ -1,5 +1,6 @@
 {
   "include-component-in-tag": true,
+  "include-v-in-tag": true,
   "packages": {
     "pkg/plugins/echo": {
       "changelog-path": "CHANGELOG.md",
@@ -7,7 +8,6 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "include-v-in-tag": true,
       "prerelease": false
     },
     "pkg/plugins/zap": {
@@ -16,7 +16,6 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "include-v-in-tag": true,
       "prerelease": false
     },
     "pkg/sen": {
@@ -25,7 +24,6 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
-      "include-v-in-tag": true,
       "prerelease": false
     }
   },

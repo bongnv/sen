@@ -8,7 +8,7 @@
       "draft": false,
       "include-v-in-tag": true,
       "release-as": "0.1.0",
-      "prerelease": true
+      "prerelease": false
     },
     "pkg/plugins/zap": {
       "changelog-path": "CHANGELOG.md",
@@ -18,7 +18,7 @@
       "draft": false,
       "include-v-in-tag": true,
       "release-as": "0.1.0",
-      "prerelease": true
+      "prerelease": false
     },
     "pkg/sen": {
       "changelog-path": "CHANGELOG.md",
@@ -28,7 +28,7 @@
       "draft": false,
       "include-v-in-tag": true,
       "release-as": "0.1.0",
-      "prerelease": true
+      "prerelease": false
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"

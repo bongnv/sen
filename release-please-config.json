@@ -1,7 +1,4 @@
 {
-  "include-component-in-tag": true,
-  "include-v-in-tag": true,
-  "monorepo-tags": true,
   "packages": {
     "pkg/plugins/echo": {
       "changelog-path": "CHANGELOG.md",
@@ -10,6 +7,9 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "release-as": "0.1.0",
+      "include-component-in-tag": true,
+      "include-v-in-tag": true,
+      "monorepo-tags": true,
       "prerelease": false
     },
     "pkg/plugins/zap": {
@@ -19,6 +19,9 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "release-as": "0.1.0",
+      "include-component-in-tag": true,
+      "include-v-in-tag": true,
+      "monorepo-tags": true,
       "prerelease": false
     },
     "pkg/sen": {
@@ -28,6 +31,9 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "release-as": "0.1.0",
+      "include-component-in-tag": true,
+      "include-v-in-tag": true,
+      "monorepo-tags": true,
       "prerelease": false
     }
   },

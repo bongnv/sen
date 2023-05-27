@@ -22,17 +22,6 @@ type gracefulShutdownPlugin struct {
 }
 
 func (s *gracefulShutdownPlugin) Initialize() error {
-	shutdownCh := make(chan struct{})
-
-	if err := s.Injector.Register("graceful-shutdown", s); err != nil {
-		return err
-	}
-
-	s.Lifecycle.OnShutdown(func(ctx context.Context) error {
-		close(shutdownCh)
-		return nil
-	})
-
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
 
@@ -42,7 +31,6 @@ func (s *gracefulShutdownPlugin) Initialize() error {
 			case <-exit:
 				_ = s.Lifecycle.Shutdown(ctx)
 			case <-ctx.Done():
-			case <-shutdownCh:
 			}
 		}()
 		return nil

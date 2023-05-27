@@ -144,12 +144,12 @@ func TestLifecycle(t *testing.T) {
 		}
 	})
 
-	t.Run("should run AfterRun hook", func(t *testing.T) {
+	t.Run("should run PostRun hook", func(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})
 
 		lc := sen.NewLifecycle()
-		lc.AfterRun(func(_ context.Context) error {
+		lc.PostRun(func(_ context.Context) error {
 			hook1Called++
 			return nil
 		})

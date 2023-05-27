@@ -10,11 +10,11 @@ import (
 // Lifecycle manages the lifecycle of an application.
 // An application starts with .Run(ctx) and will be stopped
 // when .Shutdown(ctx) is called.
-// It also allows to hook into the application via OnRun, OnShutdown and AfterRun.
+// It also allows to hook into the application via OnRun, OnShutdown and PostRun.
 type Lifecycle interface {
 	OnRun(h Hook)
 	OnShutdown(h Hook)
-	AfterRun(h Hook)
+	PostRun(h Hook)
 	Run(ctx context.Context) error
 	Shutdown(ctx context.Context) error
 }
@@ -22,7 +22,7 @@ type Lifecycle interface {
 type defaultLifecycle struct {
 	runHooks      []Hook
 	shutdownHooks []Hook
-	afterRunHooks []Hook
+	postRunHooks  []Hook
 	shutdownOnce  func(ctx context.Context) error
 }
 
@@ -32,11 +32,11 @@ func (lc *defaultLifecycle) OnRun(h Hook) {
 	lc.runHooks = append(lc.runHooks, h)
 }
 
-// AfterRun adds additional logic after all services stop running
+// PostRun adds additional logic after all services stop running
 // and shutdown logic is executed.
 // It's useful for syncing logs, etc.
-func (lc *defaultLifecycle) AfterRun(h Hook) {
-	lc.afterRunHooks = append(lc.afterRunHooks, h)
+func (lc *defaultLifecycle) PostRun(h Hook) {
+	lc.postRunHooks = append(lc.postRunHooks, h)
 }
 
 // OnShutdown adds additional logic when the app shuts down.
@@ -52,7 +52,7 @@ func (lc *defaultLifecycle) Run(ctx context.Context) (err error) {
 		err = shutdownErr
 	}
 
-	afterRunErr := executeHooks(ctx, lc.afterRunHooks)
+	afterRunErr := executeHooks(ctx, lc.postRunHooks)
 	if afterRunErr != nil && err == nil {
 		err = afterRunErr
 	}

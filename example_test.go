@@ -20,12 +20,12 @@ func Example() {
 		return nil
 	})
 
-	afterRunHook := sen.AfterRun(func(_ context.Context) error {
-		fmt.Println("AfterRun is executed")
+	postRunHook := sen.PostRun(func(_ context.Context) error {
+		fmt.Println("PostRun is executed")
 		return nil
 	})
 
-	_ = app.With(runHook, shutdownHook, afterRunHook)
+	_ = app.With(runHook, shutdownHook, postRunHook)
 	err := app.Run(context.Background())
 	if err != nil {
 		fmt.Println(err)
@@ -34,5 +34,5 @@ func Example() {
 	// Output:
 	// OnRun is executed
 	// OnShutdown is executed
-	// AfterRun is executed
+	// PostRun is executed
 }

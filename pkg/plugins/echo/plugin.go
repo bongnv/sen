@@ -8,7 +8,7 @@ import (
 	"github.com/caarlos0/env/v8"
 	"github.com/labstack/echo/v4"
 
-	"github.com/bongnv/sen"
+	"github.com/bongnv/sen/pkg/sen"
 )
 
 // Module is a sen.Plugin that provides both Config and echo.Echo for convenience.

@@ -9,7 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/bongnv/sen"
+	"github.com/bongnv/sen/pkg/sen"
 
 	echoPlugin "github.com/bongnv/sen/pkg/plugins/echo"
 )

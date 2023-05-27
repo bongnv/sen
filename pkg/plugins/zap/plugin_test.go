@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/bongnv/sen"
+	"github.com/bongnv/sen/pkg/sen"
 
 	zapPlugin "github.com/bongnv/sen/pkg/plugins/zap"
 )

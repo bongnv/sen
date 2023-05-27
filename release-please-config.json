@@ -10,6 +10,7 @@
       "include-component-in-tag": true,
       "include-v-in-tag": true,
       "tag-separator": "/",
+      "release-as": "0.1.0",
       "prerelease": false
     },
     "pkg/plugins/zap": {
@@ -22,6 +23,7 @@
       "include-component-in-tag": true,
       "include-v-in-tag": true,
       "tag-separator": "/",
+      "release-as": "0.1.0",
       "prerelease": false
     },
     "pkg/sen": {
@@ -34,6 +36,7 @@
       "include-component-in-tag": true,
       "include-v-in-tag": true,
       "tag-separator": "/",
+      "release-as": "0.1.0",
       "prerelease": false
     }
   },

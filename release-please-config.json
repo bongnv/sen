@@ -1,6 +1,7 @@
 {
   "packages": {
     "pkg/plugins/echo": {
+      "package-name": "pkg/plugins/echo",
       "changelog-path": "CHANGELOG.md",
       "release-type": "go",
       "bump-minor-pre-major": true,
@@ -13,6 +14,7 @@
       "prerelease": false
     },
     "pkg/plugins/zap": {
+      "package-name": "pkg/plugins/zap",
       "changelog-path": "CHANGELOG.md",
       "release-type": "go",
       "bump-minor-pre-major": true,
@@ -25,6 +27,7 @@
       "prerelease": false
     },
     "pkg/sen": {
+      "package-name": "pkg/sen",
       "changelog-path": "CHANGELOG.md",
       "release-type": "go",
       "bump-minor-pre-major": true,

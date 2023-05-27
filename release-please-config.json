@@ -1,6 +1,7 @@
 {
   "include-component-in-tag": true,
   "include-v-in-tag": true,
+  "monorepo-tags": true,
   "packages": {
     "pkg/plugins/echo": {
       "changelog-path": "CHANGELOG.md",
@@ -8,6 +9,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
+      "release-as": "0.1.0",
       "prerelease": false
     },
     "pkg/plugins/zap": {
@@ -16,6 +18,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
+      "release-as": "0.1.0",
       "prerelease": false
     },
     "pkg/sen": {
@@ -24,6 +27,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
+      "release-as": "0.1.0",
       "prerelease": false
     }
   },

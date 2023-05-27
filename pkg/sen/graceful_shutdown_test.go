@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bongnv/sen"
+	"github.com/bongnv/sen/pkg/sen"
 )
 
 type mockWaitingPlugin struct {

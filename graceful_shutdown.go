@@ -22,7 +22,6 @@ type gracefulShutdownPlugin struct {
 }
 
 func (s *gracefulShutdownPlugin) Initialize() error {
-
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
 

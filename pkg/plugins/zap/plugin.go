@@ -18,8 +18,8 @@ import (
 type Plugin struct {
 	Options []zap.Option
 
-	LC       sen.Lifecycle `inject:"lifecycle"`
-	Injector sen.Injector  `inject:"injector"`
+	LC  sen.Lifecycle `inject:"lifecycle"`
+	Hub sen.Hub       `inject:"hub"`
 }
 
 // Initialize initialises zap logger for the application.
@@ -42,5 +42,5 @@ func (p Plugin) Initialize() error {
 		return nil
 	})
 
-	return p.Injector.Register("logger", logger)
+	return p.Hub.Register("logger", logger)
 }

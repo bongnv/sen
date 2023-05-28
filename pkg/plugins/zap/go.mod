@@ -3,7 +3,7 @@ module github.com/bongnv/sen/pkg/plugins/zap
 go 1.20
 
 require (
-	github.com/bongnv/sen/pkg/sen v0.1.0
+	github.com/bongnv/sen/pkg/sen v0.2.0
 	go.uber.org/zap v1.24.0
 )
 

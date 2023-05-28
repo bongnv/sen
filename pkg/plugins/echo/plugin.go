@@ -35,7 +35,7 @@ type Config struct {
 //
 // app.With(&echo.ConfigProvider{})
 type ConfigProvider struct {
-	Injector sen.Injector `inject:"injector"`
+	Hub sen.Hub `inject:"hub"`
 }
 
 // Initialize loads Config from environment variables and
@@ -46,7 +46,7 @@ func (p ConfigProvider) Initialize() error {
 		return err
 	}
 
-	return p.Injector.Register("echo.config", cfg)
+	return p.Hub.Register("echo.config", cfg)
 }
 
 // Plugin is a plugin that provides an instance of echo.Echo.
@@ -61,9 +61,9 @@ type Plugin struct {
 	Middlewares []echo.MiddlewareFunc
 
 	// will be injected
-	LC       sen.Lifecycle `inject:"lifecycle"`
-	Injector sen.Injector  `inject:"injector"`
-	Cfg      *Config       `inject:"echo.config"`
+	LC  sen.Lifecycle `inject:"lifecycle"`
+	Hub sen.Hub       `inject:"hub"`
+	Cfg *Config       `inject:"echo.config"`
 }
 
 // Initialize initializes and registers the echo.Echo instance with the provided middlewares.
@@ -93,7 +93,7 @@ func (p Plugin) Initialize() error {
 		return shutdownFn(ctx)
 	})
 
-	return p.Injector.Register("echo", e)
+	return p.Hub.Register("echo", e)
 }
 
 // runOnce allows creates a function that will call fn only once.

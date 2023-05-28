@@ -20,7 +20,6 @@ func main() {
 		echoPlugin.Bundle(),
 		&Service{},
 	)
-
 	if err != nil {
 		log.Fatalf("Failed to initialize the app due to %v\n", err)
 	}

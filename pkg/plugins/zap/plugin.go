@@ -2,8 +2,6 @@ package zap
 
 import (
 	"context"
-	"errors"
-	"syscall"
 
 	"go.uber.org/zap"
 
@@ -37,12 +35,8 @@ func (p Plugin) Initialize() error {
 
 	p.LC.PostRun(func(_ context.Context) error {
 		revertStdLog()
-		err := logger.Sync()
-		// This is a workaround until it's fixed by zap. See https://github.com/uber-go/zap/issues/991
-		if err != nil && (!errors.Is(err, syscall.EBADF) && !errors.Is(err, syscall.ENOTTY)) {
-			return err
-		}
-
+		// Sync may return errors weirdly. It's best to ignore it for now. See https://github.com/uber-go/zap/issues/991
+		_ = logger.Sync()
 		return nil
 	})
 

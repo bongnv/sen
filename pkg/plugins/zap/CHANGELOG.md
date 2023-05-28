@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/bongnv/sen/compare/pkg/plugins/zap/v0.1.1...pkg/plugins/zap/v0.1.2) (2023-05-28)
+
+
+### Bug Fixes
+
+* redirect std log to zap.Logger ([#41](https://github.com/bongnv/sen/issues/41)) ([2613dcb](https://github.com/bongnv/sen/commit/2613dcb159c7e1f992b0e9f73929052b0941a71b))
+
 ## [0.1.1](https://github.com/bongnv/sen/compare/pkg/plugins/zap/v0.1.0...pkg/plugins/zap/v0.1.1) (2023-05-27)
 
 

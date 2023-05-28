@@ -3,6 +3,7 @@ package echo
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/caarlos0/env/v8"
@@ -11,12 +12,12 @@ import (
 	"github.com/bongnv/sen/pkg/sen"
 )
 
-// Module is a sen.Plugin that provides both Config and echo.Echo for convenience.
+// Bundle is a sen.Plugin that provides both Config and echo.Echo for convenience.
 //
 // # Usage
 //
 // app.With(echo.Module())
-func Module() sen.Plugin {
+func Bundle() sen.Plugin {
 	return sen.Module(
 		&ConfigProvider{},
 		&Plugin{},
@@ -80,7 +81,12 @@ func (p Plugin) Initialize() error {
 			_ = shutdownFn(context.Background())
 		}()
 
-		return e.Start(fmt.Sprintf(":%s", p.Cfg.Port))
+		err := e.Start(fmt.Sprintf(":%s", p.Cfg.Port))
+		if err != http.ErrServerClosed {
+			return err
+		}
+
+		return nil
 	})
 
 	p.LC.OnShutdown(func(ctx context.Context) error {

@@ -7,9 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/labstack/echo/v4"
-
 	"github.com/bongnv/sen/pkg/sen"
+	"github.com/labstack/echo/v4"
 
 	echoPlugin "github.com/bongnv/sen/pkg/plugins/echo"
 )
@@ -27,7 +26,7 @@ func TestPlugin(t *testing.T) {
 		app := sen.New()
 		m := &mockPlugin{}
 
-		err := app.With(echoPlugin.Module(), m)
+		err := app.With(echoPlugin.Bundle(), m)
 		if err != nil {
 			t.Errorf("Expected no error but got: %v", err)
 		}
@@ -42,7 +41,7 @@ func TestPlugin(t *testing.T) {
 		doneCh := make(chan struct{})
 
 		app := sen.New()
-		err := app.With(echoPlugin.Module())
+		err := app.With(echoPlugin.Bundle())
 		if err != nil {
 			t.Errorf("Expected no error but got: %v", err)
 		}
@@ -65,6 +64,41 @@ func TestPlugin(t *testing.T) {
 			if hook1Called != 1 {
 				t.Errorf("Expected hook1 is called once but got %d", hook1Called)
 			}
+		case <-time.After(100 * time.Millisecond):
+			t.Errorf("test timed out")
+		}
+	})
+
+	t.Run("should not return an error when it's stopped gracefully", func(t *testing.T) {
+		serverIsStarted := make(chan struct{})
+		doneCh := make(chan struct{})
+
+		app := sen.New()
+		err := app.With(echoPlugin.Bundle())
+		if err != nil {
+			t.Errorf("Expected no error but got: %v", err)
+		}
+
+		_ = app.With(sen.OnRun(func(_ context.Context) error {
+			close(serverIsStarted)
+			return nil
+		}))
+
+		go func() {
+			err := app.Run(context.Background())
+			if err != nil {
+				t.Errorf("Unexpected error: %v", err)
+			}
+			close(doneCh)
+		}()
+
+		go func() {
+			<-serverIsStarted
+			_ = app.Shutdown(context.Background())
+		}()
+
+		select {
+		case <-doneCh:
 		case <-time.After(100 * time.Millisecond):
 			t.Errorf("test timed out")
 		}

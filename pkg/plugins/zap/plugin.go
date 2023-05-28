@@ -30,7 +30,11 @@ func (p Plugin) Initialize() error {
 		return err
 	}
 
+	// redirect std log to logger
+	revertStdLog := zap.RedirectStdLog(logger)
+
 	p.LC.PostRun(func(_ context.Context) error {
+		revertStdLog()
 		return logger.Sync()
 	})
 

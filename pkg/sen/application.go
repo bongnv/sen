@@ -24,19 +24,19 @@ type Plugin interface {
 //	   handleError(err)
 //	}
 type Application struct {
-	injector Injector
-	lc       Lifecycle
+	hub Hub
+	lc  Lifecycle
 }
 
 // New creates a new Application.
 func New() *Application {
 	app := &Application{
-		injector: newInjector(),
-		lc:       newLifecycle(),
+		hub: newHub(),
+		lc:  newLifecycle(),
 	}
 
-	_ = app.injector.Register("app", app)
-	_ = app.injector.Register("lifecycle", app.lc)
+	_ = app.hub.Register("app", app)
+	_ = app.hub.Register("lifecycle", app.lc)
 
 	return app
 }
@@ -46,7 +46,7 @@ func New() *Application {
 // with dependencies and Init method will be called.
 func (app *Application) With(plugins ...Plugin) error {
 	for _, p := range plugins {
-		if err := app.injector.Inject(p); err != nil {
+		if err := app.hub.Inject(p); err != nil {
 			return err
 		}
 

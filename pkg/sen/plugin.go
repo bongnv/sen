@@ -1,7 +1,7 @@
 package sen
 
 type componentPlugin struct {
-	Injector Injector `inject:"injector"`
+	Hub Hub `inject:"hub"`
 
 	name      string
 	component any
@@ -9,7 +9,7 @@ type componentPlugin struct {
 
 // Initialize adds the component to the application as a named dependency.
 func (p *componentPlugin) Initialize() error {
-	return p.Injector.Register(p.name, p.component)
+	return p.Hub.Register(p.name, p.component)
 }
 
 // Component creates a new component plugin.

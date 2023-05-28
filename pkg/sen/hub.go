@@ -17,20 +17,22 @@ const (
 // so it couldn't be found by name.
 var ErrComponentNotRegistered = errors.New("sen: the component is not registered")
 
-// Injector is a hub of components. It allows injecting components via tags or types.
-type Injector interface {
+// Hub is a container of components.
+// It allows registering new components by names as well as
+// injecting dependencies into a component via tags or types.
+type Hub interface {
 	Register(name string, component interface{}) error
 	Retrieve(name string) (interface{}, error)
 	Inject(component interface{}) error
 }
 
-func newInjector() Injector {
-	injector := &defaultInjector{
+func newHub() Hub {
+	hub := &defaultHub{
 		dependencies: make(map[string]*dependency),
 	}
 
-	_ = injector.Register("injector", injector)
-	return injector
+	_ = hub.Register("hub", hub)
+	return hub
 }
 
 type dependency struct {
@@ -39,14 +41,14 @@ type dependency struct {
 	reflectType  reflect.Type
 }
 
-type defaultInjector struct {
+type defaultHub struct {
 	dependencies map[string]*dependency
 }
 
 // Register injects dependencies into a component and register the component into the depdenency container
 // for the next injection.
-func (injector *defaultInjector) Register(name string, component interface{}) error {
-	if err := injector.validateNamne(name); err != nil {
+func (hub *defaultHub) Register(name string, component interface{}) error {
+	if err := hub.validateNamne(name); err != nil {
 		return err
 	}
 
@@ -56,18 +58,18 @@ func (injector *defaultInjector) Register(name string, component interface{}) er
 		reflectValue: reflect.ValueOf(component),
 	}
 
-	if err := injector.inject(toAddDep); err != nil {
+	if err := hub.inject(toAddDep); err != nil {
 		return err
 	}
 
-	injector.dependencies[name] = toAddDep
+	hub.dependencies[name] = toAddDep
 
 	return nil
 }
 
 // Retrieve retrieves a component via name. It returns an error if there is any.
-func (injector *defaultInjector) Retrieve(name string) (interface{}, error) {
-	loadedDep, found := injector.dependencies[name]
+func (hub *defaultHub) Retrieve(name string) (interface{}, error) {
+	loadedDep, found := hub.dependencies[name]
 	if !found {
 		return nil, ErrComponentNotRegistered
 	}
@@ -76,32 +78,32 @@ func (injector *defaultInjector) Retrieve(name string) (interface{}, error) {
 }
 
 // Inject injects dependencies into a component.
-func (injector *defaultInjector) Inject(component interface{}) error {
+func (hub *defaultHub) Inject(component interface{}) error {
 	toAddDep := &dependency{
 		value:        component,
 		reflectType:  reflect.TypeOf(component),
 		reflectValue: reflect.ValueOf(component),
 	}
 
-	return injector.inject(toAddDep)
+	return hub.inject(toAddDep)
 }
 
-func (injector *defaultInjector) validateNamne(name string) error {
-	if _, found := injector.dependencies[name]; found {
-		return fmt.Errorf("injector: %s is already registered", name)
+func (hub *defaultHub) validateNamne(name string) error {
+	if _, found := hub.dependencies[name]; found {
+		return fmt.Errorf("hub: %s is already registered", name)
 	}
 
 	if name == autoInjectionTag {
-		return fmt.Errorf("injector: %s is revserved, please use a different name", autoInjectionTag)
+		return fmt.Errorf("hub: %s is revserved, please use a different name", autoInjectionTag)
 	}
 
 	return nil
 }
 
-func (injector *defaultInjector) inject(dep *dependency) error {
+func (hub *defaultHub) inject(dep *dependency) error {
 	if !isStructPtr(dep.reflectType) {
 		if hasInjectTag(dep) {
-			return fmt.Errorf("injector: %s is not injectable, a pointer is expected", dep.reflectType)
+			return fmt.Errorf("hub: %s is not injectable, a pointer is expected", dep.reflectType)
 		}
 
 		return nil
@@ -117,7 +119,7 @@ func (injector *defaultInjector) inject(dep *dependency) error {
 			continue
 		}
 
-		loadedDep, err := injector.loadDepForTag(tagValue, fieldType)
+		loadedDep, err := hub.loadDepForTag(tagValue, fieldType)
 		if err != nil {
 			return err
 		}
@@ -128,7 +130,7 @@ func (injector *defaultInjector) inject(dep *dependency) error {
 		}
 
 		if !loadedDep.reflectType.AssignableTo(fieldType) {
-			return fmt.Errorf("injector: %s is not assignable from %s", fieldType, loadedDep.reflectType)
+			return fmt.Errorf("hub: %s is not assignable from %s", fieldType, loadedDep.reflectType)
 		}
 
 		fieldValue.Set(loadedDep.reflectValue)
@@ -137,30 +139,30 @@ func (injector *defaultInjector) inject(dep *dependency) error {
 	return nil
 }
 
-func (injector *defaultInjector) loadDepForTag(tag string, t reflect.Type) (*dependency, error) {
+func (hub *defaultHub) loadDepForTag(tag string, t reflect.Type) (*dependency, error) {
 	tagName, optional, err := parseTag(tag)
 	if err != nil {
 		return nil, err
 	}
 
 	if tag == autoInjectionTag {
-		return injector.findByType(t, optional)
+		return hub.findByType(t, optional)
 	}
 
-	loadedDep, found := injector.dependencies[tagName]
+	loadedDep, found := hub.dependencies[tagName]
 	if !found && !optional {
-		return nil, fmt.Errorf("injector: %s is not registered", tagName)
+		return nil, fmt.Errorf("hub: %s is not registered", tagName)
 	}
 
 	return loadedDep, nil
 }
 
-func (injector *defaultInjector) findByType(t reflect.Type, optional bool) (*dependency, error) {
+func (hub *defaultHub) findByType(t reflect.Type, optional bool) (*dependency, error) {
 	var foundVal *dependency
-	for _, v := range injector.dependencies {
+	for _, v := range hub.dependencies {
 		if v.reflectType.AssignableTo(t) {
 			if foundVal != nil {
-				return nil, fmt.Errorf("injector: there is a conflict when finding the dependency for %s", t.String())
+				return nil, fmt.Errorf("hub: there is a conflict when finding the dependency for %s", t.String())
 			}
 
 			foundVal = v
@@ -168,7 +170,7 @@ func (injector *defaultInjector) findByType(t reflect.Type, optional bool) (*dep
 	}
 
 	if foundVal == nil && !optional {
-		return nil, fmt.Errorf("injector: couldn't find the dependency for %s", t.String())
+		return nil, fmt.Errorf("hub: couldn't find the dependency for %s", t.String())
 	}
 
 	return foundVal, nil
@@ -179,16 +181,16 @@ func parseTag(tag string) (string, bool, error) {
 	switch len(parts) {
 	case 2:
 		if parts[1] != optionalTag {
-			return "", false, fmt.Errorf("injector: %s is unexpected", parts[1])
+			return "", false, fmt.Errorf("hub: %s is unexpected", parts[1])
 		}
 
 		return parts[0], parts[1] == optionalTag, nil
 	case 1:
 		return parts[0], false, nil
 	case 0:
-		return "", false, fmt.Errorf("injector: tag must not be empty")
+		return "", false, fmt.Errorf("hub: tag must not be empty")
 	default:
-		return "", false, fmt.Errorf("injector: unable to parse tag %s", tag)
+		return "", false, fmt.Errorf("hub: unable to parse tag %s", tag)
 	}
 }
 

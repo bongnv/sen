@@ -1,7 +1,7 @@
 package sen
 
-// NewInjector exports newInjector for testing purpose only.
-var NewInjector = newInjector
+// NewHub exports newHub for testing purpose only.
+var NewHub = newHub
 
 // NewLifecycle exports newLifecycle for testing.
 var NewLifecycle = newLifecycle

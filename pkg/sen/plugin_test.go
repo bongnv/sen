@@ -7,7 +7,7 @@ import (
 	"github.com/bongnv/sen/pkg/sen"
 )
 
-const dataInjectErrMsg = "injector: data is not registered"
+const dataInjectErrMsg = "hub: data is not registered"
 
 type mockPlugin struct {
 	Data int `inject:"data"`

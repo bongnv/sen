@@ -1,6 +1,7 @@
 package zap_test
 
 import (
+	"context"
 	"testing"
 
 	"go.uber.org/zap"
@@ -30,6 +31,11 @@ func TestPlugin(t *testing.T) {
 
 		if m.Logger == nil {
 			t.Errorf("Expected *zap.Logger to be populated")
+		}
+
+		runErr := app.Run(context.Background())
+		if runErr != nil {
+			t.Errorf("Expected no error after running but got %v", runErr)
 		}
 	})
 }

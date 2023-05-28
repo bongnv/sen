@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/bongnv/sen/compare/pkg/plugins/zap/v0.1.2...pkg/plugins/zap/v0.2.0) (2023-05-28)
+
+
+### Miscellaneous Chores
+
+* upgrade sen to v0.2.0 ([d7f99e2](https://github.com/bongnv/sen/commit/d7f99e2e28976b84d0e77102886ec77377522c07))
+
 ## [0.1.2](https://github.com/bongnv/sen/compare/pkg/plugins/zap/v0.1.1...pkg/plugins/zap/v0.1.2) (2023-05-28)
 
 

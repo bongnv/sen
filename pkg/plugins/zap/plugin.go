@@ -32,9 +32,11 @@ func (p Plugin) Initialize() error {
 
 	// redirect std log to logger
 	revertStdLog := zap.RedirectStdLog(logger)
+	revertGlobal := zap.ReplaceGlobals(logger)
 
 	p.LC.PostRun(func(_ context.Context) error {
 		revertStdLog()
+		revertGlobal()
 		// Sync may return errors weirdly. It's best to ignore it for now. See https://github.com/uber-go/zap/issues/991
 		_ = logger.Sync()
 		return nil

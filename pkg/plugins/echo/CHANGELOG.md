@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/bongnv/sen/compare/pkg/plugins/echo/v0.1.1...pkg/plugins/echo/v0.1.2) (2023-05-28)
+
+
+### Bug Fixes
+
+* echo shouldn't return an error when it shuts down gracefully ([#43](https://github.com/bongnv/sen/issues/43)) ([7f67f14](https://github.com/bongnv/sen/commit/7f67f14c2998880e743487ae856815e15a554774))
+
 ## [0.1.1](https://github.com/bongnv/sen/compare/pkg/plugins/echo/v0.1.0...pkg/plugins/echo/v0.1.1) (2023-05-27)
 
 

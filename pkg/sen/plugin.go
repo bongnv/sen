@@ -13,8 +13,8 @@ func (p *componentPlugin) Initialize() error {
 }
 
 // Component creates a new component plugin.
-// It is a simple plugin to add a component into the application.
-// The component will be registered with the given name.
+// The simple plugin adds a component into the application
+// under the given name.
 func Component(name string, c any) Plugin {
 	return &componentPlugin{
 		name:      name,
@@ -51,7 +51,7 @@ type onRunPlugin struct {
 	hooks []Hook
 }
 
-// Initialize adds the component to the application as a named dependency.
+// Initialize adds the hook to the application lifecycle.
 func (p onRunPlugin) Initialize() error {
 	for _, h := range p.hooks {
 		p.LC.OnRun(h)
@@ -71,7 +71,7 @@ type onShutdownPlugin struct {
 	hooks []Hook
 }
 
-// Initialize adds the component to the application as a named dependency.
+// Initialize adds the hook to the application lifecycle.
 func (p onShutdownPlugin) Initialize() error {
 	for _, h := range p.hooks {
 		p.LC.OnShutdown(h)
@@ -93,7 +93,7 @@ type postRunPlugin struct {
 	hooks []Hook
 }
 
-// Initialize adds the component to the application as a named dependency.
+// Initialize adds the hook to the application lifecycle.
 func (p postRunPlugin) Initialize() error {
 	for _, h := range p.hooks {
 		p.LC.PostRun(h)

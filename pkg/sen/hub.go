@@ -21,8 +21,14 @@ var ErrComponentNotRegistered = errors.New("sen: the component is not registered
 // It allows registering new components by names as well as
 // injecting dependencies into a component via tags or types.
 type Hub interface {
+	// Register injects dependencies into a component and register the component into the depdenency container
+	// for the next injection.
 	Register(name string, component interface{}) error
+
+	// Retrieve retrieves a component via name. It returns an error if there is any.
 	Retrieve(name string) (interface{}, error)
+
+	// Inject injects dependencies into a component.
 	Inject(component interface{}) error
 }
 
@@ -45,8 +51,6 @@ type defaultHub struct {
 	dependencies map[string]*dependency
 }
 
-// Register injects dependencies into a component and register the component into the depdenency container
-// for the next injection.
 func (hub *defaultHub) Register(name string, component interface{}) error {
 	if err := hub.validateNamne(name); err != nil {
 		return err
@@ -67,7 +71,6 @@ func (hub *defaultHub) Register(name string, component interface{}) error {
 	return nil
 }
 
-// Retrieve retrieves a component via name. It returns an error if there is any.
 func (hub *defaultHub) Retrieve(name string) (interface{}, error) {
 	loadedDep, found := hub.dependencies[name]
 	if !found {
@@ -77,7 +80,6 @@ func (hub *defaultHub) Retrieve(name string) (interface{}, error) {
 	return loadedDep.value, nil
 }
 
-// Inject injects dependencies into a component.
 func (hub *defaultHub) Inject(component interface{}) error {
 	toAddDep := &dependency{
 		value:        component,

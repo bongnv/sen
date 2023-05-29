@@ -43,10 +43,10 @@ func TestComponent(t *testing.T) {
 	})
 }
 
-func TestModule(t *testing.T) {
+func TestBundle(t *testing.T) {
 	t.Run("should apply all plugins into the application", func(t *testing.T) {
 		component := &mockComponent{}
-		m := sen.Module(
+		m := sen.Bundle(
 			sen.Component("data", 10),
 			sen.Component("need-data", component),
 		)
@@ -61,7 +61,7 @@ func TestModule(t *testing.T) {
 	})
 
 	t.Run("should propagate error if one plugin returns error", func(t *testing.T) {
-		m := sen.Module(
+		m := sen.Bundle(
 			sen.Component("error-plugin", &mockComponent{}),
 			sen.Component("ok-plugin", 10),
 		)
@@ -73,7 +73,7 @@ func TestModule(t *testing.T) {
 	})
 
 	t.Run("should propagate error if one plugin doesn't have enough dependencies", func(t *testing.T) {
-		m := sen.Module(
+		m := sen.Bundle(
 			&mockPlugin{},
 		)
 

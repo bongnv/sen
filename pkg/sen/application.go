@@ -17,11 +17,11 @@ type Plugin interface {
 }
 
 // Application represents an application.
-// To construct an application from plugins use, Apply. For example:
+// To construct an application from plugins use: app.With. For example:
 //
 //	app := sen.New()
-//	if err := app.Apply(plugin1, plugin2); err != nil {
-//	   handleError(err)
+//	if err := app.With(plugin1, plugin2); err != nil {
+//		handleError(err)
 //	}
 type Application struct {
 	hub Hub
@@ -43,7 +43,7 @@ func New() *Application {
 
 // With applies a plugin or multiple plugins.
 // While applying a plugin, the plugin will be injected
-// with dependencies and Init method will be called.
+// with dependencies and Initialize method will be called.
 func (app *Application) With(plugins ...Plugin) error {
 	for _, p := range plugins {
 		if err := app.hub.Inject(p); err != nil {
@@ -58,13 +58,13 @@ func (app *Application) With(plugins ...Plugin) error {
 	return nil
 }
 
-// Run runs the application.
-// It will execute all run hooks, then shutdown hooks and afterRun hooks.
+// Run runs the application by executing all run hooks in parallel.
+// After that it will execute shutdown hooks and afterRun hooks.
 func (app *Application) Run(ctx context.Context) error {
 	return app.lc.Run(ctx)
 }
 
-// Shutdown runs the application by executing all the registered hooks for this phase.
+// Shutdown runs the application by executing all the registered OnShutdown hooks.
 func (app *Application) Shutdown(ctx context.Context) error {
 	return app.lc.Shutdown(ctx)
 }

@@ -15,8 +15,6 @@ func (p *componentPlugin) Initialize() error {
 // Component creates a new component plugin.
 // It is a simple plugin to add a component into the application.
 // The component will be registered with the given name.
-// Init method will be called to initialize the component
-// after dependencies are injected.
 func Component(name string, c any) Plugin {
 	return &componentPlugin{
 		name:      name,
@@ -24,20 +22,20 @@ func Component(name string, c any) Plugin {
 	}
 }
 
-// Module is a collection of plugins.
-func Module(plugins ...Plugin) Plugin {
-	return &modulePlugin{
+// Bundle is a collection of plugins.
+func Bundle(plugins ...Plugin) Plugin {
+	return &bundlePlugin{
 		plugins: plugins,
 	}
 }
 
-type modulePlugin struct {
+type bundlePlugin struct {
 	App *Application `inject:"app"`
 
 	plugins []Plugin
 }
 
-func (m modulePlugin) Initialize() error {
+func (m bundlePlugin) Initialize() error {
 	return m.App.With(m.plugins...)
 }
 

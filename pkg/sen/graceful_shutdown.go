@@ -17,7 +17,6 @@ func GracefulShutdown() Plugin {
 // gracefulShutdownPlugin is a plugin to allow the application to receive SIGTERM signal
 // and shuts down the application gracefully.
 type gracefulShutdownPlugin struct {
-	Hub       Hub       `inject:"hub"`
 	Lifecycle Lifecycle `inject:"lifecycle"`
 }
 

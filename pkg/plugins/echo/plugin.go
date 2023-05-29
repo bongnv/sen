@@ -16,7 +16,7 @@ import (
 //
 // # Usage
 //
-// app.With(echo.Module())
+//	app.With(echo.Module())
 func Bundle() sen.Plugin {
 	return sen.Module(
 		&ConfigProvider{},
@@ -33,7 +33,7 @@ type Config struct {
 //
 // # Usage
 //
-// app.With(&echo.ConfigProvider{})
+//	app.With(&echo.ConfigProvider{})
 type ConfigProvider struct {
 	Hub sen.Hub `inject:"hub"`
 }

@@ -30,12 +30,12 @@ func main() {
 }
 
 // Service is an example implementation of a service.
-// Its dependencies are injected when registering to sen.
+// Its dependencies are injected when it's registered to sen.
 type Service struct {
-	Injector sen.Injector  `inject:"injector"`
-	Echo     *echo.Echo    `inject:"echo"`
-	Logger   *zap.Logger   `inject:"logger"`
-	LC       sen.Lifecycle `inject:"lifecycle"`
+	Hub    sen.Hub       `inject:"hub"`
+	Echo   *echo.Echo    `inject:"echo"`
+	Logger *zap.Logger   `inject:"logger"`
+	LC     sen.Lifecycle `inject:"lifecycle"`
 }
 
 // Initialize initializes the service.
@@ -55,7 +55,8 @@ func (s *Service) Initialize() error {
 
 	// Registering the service under the name "my-service" so
 	// it can be injected as a dependency later on.
-	return s.Injector.Register("my-service", s)
+	// It's also optional.
+	return s.Hub.Register("my-service", s)
 }
 
 // Run is a hook when the application starts to run.
@@ -68,7 +69,10 @@ func (s *Service) Run(_ context.Context) error {
 	return nil
 }
 
-// Shutdown is a hook when the application is shutting down.
+// Shutdown is a hook when the application is shutting down. It's registered
+// to sen.Application via:
+//
+//	s.LC.OnShutdown(s.Shutdown)
 func (s *Service) Shutdown(_ context.Context) error {
 	s.Logger.Info("The service is shutting down")
 	return nil

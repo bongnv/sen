@@ -1,7 +1,7 @@
 {
   "pkg/plugins/echo": "0.2.0",
   "pkg/plugins/envconfig": "0.1.0",
-  "pkg/plugins/postgres-gorm": "0.0.0",
+  "pkg/plugins/postgres-gorm": "0.1.0",
   "pkg/plugins/zap": "0.2.0",
   "pkg/sen": "0.3.0"
 }

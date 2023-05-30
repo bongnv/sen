@@ -24,6 +24,18 @@
       "tag-separator": "/",
       "prerelease": false
     },
+    "pkg/plugins/postgres-gorm": {
+      "package-name": "pkg/plugins/postgres-gorm",
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "go",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "draft": false,
+      "include-component-in-tag": true,
+      "include-v-in-tag": true,
+      "tag-separator": "/",
+      "prerelease": false
+    },
     "pkg/plugins/zap": {
       "package-name": "pkg/plugins/zap",
       "changelog-path": "CHANGELOG.md",

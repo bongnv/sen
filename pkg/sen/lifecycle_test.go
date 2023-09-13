@@ -15,18 +15,18 @@ func TestLifecycle(t *testing.T) {
 		hook1Called := 0
 		hook2Called := 0
 
-		lc := sen.NewLifecycle()
-		lc.OnRun(func(_ context.Context) error {
+		app, _ := sen.New()
+		app.OnRun(func(_ context.Context) error {
 			hook1Called++
 			return nil
 		})
 
-		lc.OnRun(func(ctx context.Context) error {
+		app.OnRun(func(ctx context.Context) error {
 			hook2Called++
 			return nil
 		})
 
-		err := lc.Run(context.Background())
+		err := app.Run(context.Background())
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
@@ -45,26 +45,26 @@ func TestLifecycle(t *testing.T) {
 		hook2Called := 0
 		doneCh := make(chan struct{})
 
-		lc := sen.NewLifecycle()
-		lc.OnShutdown(func(_ context.Context) error {
+		app, _ := sen.New()
+		app.OnShutdown(func(_ context.Context) error {
 			hook1Called++
 			return nil
 		})
 
-		lc.OnShutdown(func(_ context.Context) error {
+		app.OnShutdown(func(_ context.Context) error {
 			hook2Called++
 			return nil
 		})
 
 		go func() {
-			err := lc.Run(context.Background())
+			err := app.Run(context.Background())
 			if err != nil {
 				t.Errorf("Expected no error")
 			}
 			close(doneCh)
 		}()
 
-		err := lc.Shutdown(context.Background())
+		err := app.Shutdown(context.Background())
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
@@ -86,22 +86,22 @@ func TestLifecycle(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})
 
-		lc := sen.NewLifecycle()
-		lc.OnRun(func(_ context.Context) error {
+		app, _ := sen.New()
+		app.OnRun(func(_ context.Context) error {
 			hook1Called++
 			close(doneCh)
 			return nil
 		})
 
-		lc.OnRun(func(_ context.Context) error {
+		app.OnRun(func(_ context.Context) error {
 			return errors.New("random error")
 		})
 
-		lc.OnRun(func(_ context.Context) error {
+		app.OnRun(func(_ context.Context) error {
 			return errors.New("random error")
 		})
 
-		err := lc.Run(context.Background())
+		err := app.Run(context.Background())
 		if fmt.Sprintf("%v", err) != "random error" {
 			t.Errorf("Unexpected err %v", err)
 		}
@@ -119,18 +119,18 @@ func TestLifecycle(t *testing.T) {
 		hook1Called := 0
 		hook2Called := 0
 
-		lc := sen.NewLifecycle()
-		lc.OnRun(func(_ context.Context) error {
+		app, _ := sen.New()
+		app.OnRun(func(_ context.Context) error {
 			hook1Called++
 			return errors.New("run error")
 		})
 
-		lc.OnShutdown(func(ctx context.Context) error {
+		app.OnShutdown(func(ctx context.Context) error {
 			hook2Called++
 			return nil
 		})
 
-		err := lc.Run(context.Background())
+		err := app.Run(context.Background())
 		if fmt.Sprintf("%v", err) != "run error" {
 			t.Errorf("Unexpected error: %v", err)
 		}
@@ -148,21 +148,21 @@ func TestLifecycle(t *testing.T) {
 		hook1Called := 0
 		doneCh := make(chan struct{})
 
-		lc := sen.NewLifecycle()
-		lc.PostRun(func(_ context.Context) error {
+		app, _ := sen.New()
+		app.PostRun(func(_ context.Context) error {
 			hook1Called++
 			return nil
 		})
 
 		go func() {
-			err := lc.Run(context.Background())
+			err := app.Run(context.Background())
 			if err != nil {
 				t.Errorf("Expected no error")
 			}
 			close(doneCh)
 		}()
 
-		err := lc.Shutdown(context.Background())
+		err := app.Shutdown(context.Background())
 		if err != nil {
 			t.Errorf("Expected no error")
 		}

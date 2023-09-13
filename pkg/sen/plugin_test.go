@@ -20,8 +20,7 @@ func (mockPlugin) Initialize() error {
 func TestComponent(t *testing.T) {
 	t.Run("should register a component into the application", func(t *testing.T) {
 		component := &mockComponent{}
-		app := sen.New()
-		err := app.With(
+		_, err := sen.New(
 			sen.Component("data", 10),
 			sen.Component("need-data", component),
 		)
@@ -35,8 +34,7 @@ func TestComponent(t *testing.T) {
 
 	t.Run("should propergate error if a component cannot be registered", func(t *testing.T) {
 		component := &mockComponent{}
-		app := sen.New()
-		err := app.With(sen.Component("need-data", component))
+		_, err := sen.New(sen.Component("need-data", component))
 		if fmt.Sprintf("%v", err) != dataInjectErrMsg {
 			t.Errorf("Unexpected err %v", err)
 		}
@@ -50,8 +48,7 @@ func TestBundle(t *testing.T) {
 			sen.Component("data", 10),
 			sen.Component("need-data", component),
 		)
-		app := sen.New()
-		err := app.With(m)
+		_, err := sen.New(m)
 		if err != nil {
 			t.Errorf("Unexpected err %v", err)
 		}
@@ -65,8 +62,7 @@ func TestBundle(t *testing.T) {
 			sen.Component("error-plugin", &mockComponent{}),
 			sen.Component("ok-plugin", 10),
 		)
-		app := sen.New()
-		err := app.With(m)
+		_, err := sen.New(m)
 		if fmt.Sprintf("%v", err) != dataInjectErrMsg {
 			t.Errorf("Unexpected err %v", err)
 		}
@@ -77,8 +73,7 @@ func TestBundle(t *testing.T) {
 			&mockPlugin{},
 		)
 
-		app := sen.New()
-		err := app.With(m)
+		_, err := sen.New(m)
 		if fmt.Sprintf("%v", err) != dataInjectErrMsg {
 			t.Errorf("Unexpected err %v", err)
 		}

@@ -31,12 +31,22 @@ func Bundle(plugins ...Plugin) Plugin {
 
 type bundlePlugin struct {
 	App *Application `inject:"app"`
+	Hub Hub          `inject:"hub"`
 
 	plugins []Plugin
 }
 
 func (m bundlePlugin) Initialize() error {
-	return m.App.With(m.plugins...)
+	for _, p := range m.plugins {
+		if err := m.Hub.Inject(p); err != nil {
+			return err
+		}
+
+		if err := p.Initialize(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // OnRun adds multiple hooks to run with the application.
@@ -47,14 +57,14 @@ func OnRun(hooks ...Hook) Plugin {
 }
 
 type onRunPlugin struct {
-	LC    Lifecycle `inject:"lifecycle"`
+	App   *Application `inject:"app"`
 	hooks []Hook
 }
 
 // Initialize adds the hook to the application lifecycle.
 func (p onRunPlugin) Initialize() error {
 	for _, h := range p.hooks {
-		p.LC.OnRun(h)
+		p.App.OnRun(h)
 	}
 	return nil
 }
@@ -67,14 +77,14 @@ func OnShutdown(hooks ...Hook) Plugin {
 }
 
 type onShutdownPlugin struct {
-	LC    Lifecycle `inject:"lifecycle"`
+	App   *Application `inject:"app"`
 	hooks []Hook
 }
 
 // Initialize adds the hook to the application lifecycle.
 func (p onShutdownPlugin) Initialize() error {
 	for _, h := range p.hooks {
-		p.LC.OnShutdown(h)
+		p.App.OnShutdown(h)
 	}
 	return nil
 }
@@ -89,14 +99,14 @@ func PostRun(hooks ...Hook) Plugin {
 }
 
 type postRunPlugin struct {
-	LC    Lifecycle `inject:"lifecycle"`
+	App   *Application `inject:"app"`
 	hooks []Hook
 }
 
 // Initialize adds the hook to the application lifecycle.
 func (p postRunPlugin) Initialize() error {
 	for _, h := range p.hooks {
-		p.LC.PostRun(h)
+		p.App.PostRun(h)
 	}
 	return nil
 }

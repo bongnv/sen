@@ -10,18 +10,18 @@ import (
 )
 
 type mockWaitingPlugin struct {
-	Lc    sen.Lifecycle `inject:"lifecycle"`
+	App   *sen.Application `inject:"app"`
 	ready chan struct{}
 }
 
 func (p *mockWaitingPlugin) Initialize() error {
 	waitCh := make(chan error)
-	p.Lc.OnRun(func(ctx context.Context) error {
+	p.App.OnRun(func(ctx context.Context) error {
 		close(p.ready)
 		return <-waitCh
 	})
 
-	p.Lc.OnShutdown(func(ctx context.Context) error {
+	p.App.OnShutdown(func(ctx context.Context) error {
 		close(waitCh)
 		return nil
 	})
@@ -37,8 +37,7 @@ func makeMockWaitingPlugin() *mockWaitingPlugin {
 
 func TestGracefulShutdown(t *testing.T) {
 	t.Run("should exit the app if no background job", func(t *testing.T) {
-		a := sen.New()
-		err := a.With(sen.GracefulShutdown())
+		a, err := sen.New(sen.GracefulShutdown())
 		if err != nil {
 			t.Errorf("Unexpected err %v", err)
 		}
@@ -59,8 +58,7 @@ func TestGracefulShutdown(t *testing.T) {
 	})
 
 	t.Run("should exit the app if shutdown is called", func(t *testing.T) {
-		app := sen.New()
-		err := app.With(
+		app, err := sen.New(
 			sen.GracefulShutdown(),
 			makeMockWaitingPlugin(),
 		)
@@ -90,8 +88,7 @@ func TestGracefulShutdown(t *testing.T) {
 
 	t.Run("should exit the app if SIGTERM signal is received", func(t *testing.T) {
 		m := makeMockWaitingPlugin()
-		app := sen.New()
-		err := app.With(
+		app, err := sen.New(
 			sen.GracefulShutdown(),
 			m,
 		)

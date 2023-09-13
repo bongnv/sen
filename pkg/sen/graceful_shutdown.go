@@ -17,18 +17,18 @@ func GracefulShutdown() Plugin {
 // gracefulShutdownPlugin is a plugin to allow the application to receive SIGTERM signal
 // and shuts down the application gracefully.
 type gracefulShutdownPlugin struct {
-	Lifecycle Lifecycle `inject:"lifecycle"`
+	App *Application `inject:"app"`
 }
 
 func (s *gracefulShutdownPlugin) Initialize() error {
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
 
-	s.Lifecycle.OnRun(func(ctx context.Context) error {
+	s.App.OnRun(func(ctx context.Context) error {
 		go func() {
 			select {
 			case <-exit:
-				_ = s.Lifecycle.Shutdown(ctx)
+				_ = s.App.Shutdown(ctx)
 			case <-ctx.Done():
 			}
 		}()

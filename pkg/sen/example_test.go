@@ -8,8 +8,6 @@ import (
 )
 
 func Example() {
-	app := sen.New()
-
 	runHook := sen.OnRun(func(_ context.Context) error {
 		fmt.Println("OnRun is executed")
 		return nil
@@ -25,8 +23,11 @@ func Example() {
 		return nil
 	})
 
-	_ = app.With(runHook, shutdownHook, postRunHook)
-	err := app.Run(context.Background())
+	app, err := sen.New(runHook, shutdownHook, postRunHook)
+	if err != nil {
+		fmt.Println("Failed to initialize the app:", err)
+	}
+	err = app.Run(context.Background())
 	if err != nil {
 		fmt.Println(err)
 	}
